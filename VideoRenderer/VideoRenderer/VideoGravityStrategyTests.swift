@@ -1,9 +1,8 @@
 //  Copyright © 2016 One by Aol : Publishers. All rights reserved.
 
 import XCTest
-import Nimble
 import AVFoundation
-@testable import OneMobileSDK
+@testable import VideoRenderer
 
 class VideoGravityTests: XCTestCase {
     func testVideoGravityDimensionsResize() {
@@ -20,13 +19,13 @@ class VideoGravityTests: XCTestCase {
         let resize = AVLayerVideoGravityResize
         let match = AVLayerVideoGravityResizeAspect
         
-        expect(vertical.videoGravity(for: videoSize, in: portraitSize)) == resize
-        expect(vertical.videoGravity(for: videoSize, in: landscapeSize)) == match
-        expect(horizontal.videoGravity(for: videoSize, in: portraitSize)) == match
-        expect(horizontal.videoGravity(for: videoSize, in: landscapeSize)) == resize
-        expect(both.videoGravity(for: videoSize, in: portraitSize)) == match
-        expect(both.videoGravity(for: videoSize, in: landscapeSize)) == match
-        expect(none.videoGravity(for: videoSize, in: portraitSize)) == resize
-        expect(none.videoGravity(for: videoSize, in: landscapeSize)) == resize
+        XCTAssertEqual(vertical.videoGravity(for: videoSize, in: portraitSize), resize)
+        XCTAssertEqual(vertical.videoGravity(for: videoSize, in: landscapeSize), match)
+        XCTAssertEqual(horizontal.videoGravity(for: videoSize, in: portraitSize), match)
+        XCTAssertEqual(horizontal.videoGravity(for: videoSize, in: landscapeSize), resize)
+        XCTAssertEqual(both.videoGravity(for: videoSize, in: portraitSize), match)
+        XCTAssertEqual(both.videoGravity(for: videoSize, in: landscapeSize), match)
+        XCTAssertEqual(none.videoGravity(for: videoSize, in: portraitSize), resize)
+        XCTAssertEqual(none.videoGravity(for: videoSize, in: landscapeSize), resize)
     }
 }

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		DEA9938E1E83FE0600EB3B8A /* VideoRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA993841E83FE0600EB3B8A /* VideoRenderer.framework */; };
-		DEA993931E83FE0600EB3B8A /* VideoRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993921E83FE0600EB3B8A /* VideoRendererTests.swift */; };
 		DEA993951E83FE0600EB3B8A /* VideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DEA993871E83FE0600EB3B8A /* VideoRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */; };
 		DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */; };
@@ -41,7 +40,6 @@
 		DEA993871E83FE0600EB3B8A /* VideoRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoRenderer.h; sourceTree = "<group>"; };
 		DEA993881E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA9938D1E83FE0600EB3B8A /* VideoRendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoRendererTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DEA993921E83FE0600EB3B8A /* VideoRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRendererTests.swift; sourceTree = "<group>"; };
 		DEA993941E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVPlayerRendererProps.swift; sourceTree = "<group>"; };
 		DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerModel.swift; sourceTree = "<group>"; };
@@ -120,7 +118,6 @@
 		DEA993911E83FE0600EB3B8A /* VideoRendererTests */ = {
 			isa = PBXGroup;
 			children = (
-				DEA993921E83FE0600EB3B8A /* VideoRendererTests.swift */,
 				DEA993941E83FE0600EB3B8A /* Info.plist */,
 			);
 			path = VideoRendererTests;
@@ -256,7 +253,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEA993931E83FE0600EB3B8A /* VideoRendererTests.swift in Sources */,
 				DEA993C01E83FF5300EB3B8A /* VideoGravityStrategyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

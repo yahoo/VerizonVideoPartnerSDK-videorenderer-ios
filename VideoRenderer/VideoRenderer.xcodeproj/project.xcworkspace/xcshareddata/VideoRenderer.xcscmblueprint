@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "00D70D0E7CCD472DAD8113520A55637592A53B08",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "4F2B4DDBD74E57DC6D64942F1BDC7815BA26D229" : 9223372036854775807,
+    "EC79A086A3D260B72524D5A5129EC5D0F37460EC" : 9223372036854775807,
+    "00D70D0E7CCD472DAD8113520A55637592A53B08" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8FF6CB33-6F76-4612-8C09-43D109616350",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "4F2B4DDBD74E57DC6D64942F1BDC7815BA26D229" : "..\/..\/..",
+    "EC79A086A3D260B72524D5A5129EC5D0F37460EC" : "..\/..",
+    "00D70D0E7CCD472DAD8113520A55637592A53B08" : "OneMobileSDK-videorenderer-ios\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "VideoRenderer",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "VideoRenderer\/VideoRenderer.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/aol-public\/OneMobileSDK-videorenderer-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "00D70D0E7CCD472DAD8113520A55637592A53B08"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:vidible\/mobile-sdk-ios-testapp.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4F2B4DDBD74E57DC6D64942F1BDC7815BA26D229"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:vidible\/mobile-sdk-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EC79A086A3D260B72524D5A5129EC5D0F37460EC"
+    }
+  ]
+}

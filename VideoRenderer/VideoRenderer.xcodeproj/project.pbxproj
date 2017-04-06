@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE67433C1E8C354F006FCFFC /* RendererRepository.swift */; };
 		DEA9938E1E83FE0600EB3B8A /* VideoRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA993841E83FE0600EB3B8A /* VideoRenderer.framework */; };
 		DEA993951E83FE0600EB3B8A /* VideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DEA993871E83FE0600EB3B8A /* VideoRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */; };
@@ -36,6 +37,7 @@
 /* Begin PBXFileReference section */
 		DE5B53B41E897C730036C17B /* Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Framework.xcconfig; sourceTree = "<group>"; };
 		DE5B53B51E897C840036C17B /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
+		DE67433C1E8C354F006FCFFC /* RendererRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RendererRepository.swift; sourceTree = "<group>"; };
 		DEA993841E83FE0600EB3B8A /* VideoRenderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VideoRenderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEA993871E83FE0600EB3B8A /* VideoRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoRenderer.h; sourceTree = "<group>"; };
 		DEA993881E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				DEA993BB1E83FF1D00EB3B8A /* Camera.swift */,
 				DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */,
 				DEA993881E83FE0600EB3B8A /* Info.plist */,
+				DE67433C1E8C354F006FCFFC /* RendererRepository.swift */,
 			);
 			path = VideoRenderer;
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 			files = (
 				DEA993B11E83FEF300EB3B8A /* PlayerObserver.swift in Sources */,
 				DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */,
+				DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */,
 				DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */,
 				DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */,
 				DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */,

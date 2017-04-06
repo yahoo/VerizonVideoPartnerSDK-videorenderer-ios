@@ -58,8 +58,8 @@ extension SphereView {
         private func updateViewMatrix() {
             let cosPitch = cos(pitch)
             let sinPitch = sin(pitch)
-            let cosYaw = cos(yaw + M_PI_2)
-            let sinYaw = sin(yaw + M_PI_2)
+            let cosYaw = cos(yaw + .pi / 2)
+            let sinYaw = sin(yaw + .pi / 2)
             
             let xaxis = GLKVector3(
                 v: (Float(cosYaw), 0, Float(-sinYaw))

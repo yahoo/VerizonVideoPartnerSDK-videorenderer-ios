@@ -38,14 +38,15 @@ open class RendererViewController: UIViewController {
     }
     
     public enum Event {
-        case rateChanged(Float)
-        case urlChanged(URL?)
-        case itemStatusChanged(AVPlayerItemStatus)
-        case durationChanged(TimeInterval?)
+        case playbackReady
+        case playbackStarted
+        case playbackStopped
         case playbackFinished
-        case bufferFullChanged(Bool)
-        case playbackWillKeepUpChanged(Bool)
-        case loadedTimeRangedChanged([CMTimeRange])
+        case playbackFailed(Error)
+        
+        case durationReceived(CMTime)
+        case currentTimeUpdated(CMTime)
+        case loadedRangesUpdated([CMTimeRange])
     }
     
     public var props: Props?

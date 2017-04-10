@@ -61,6 +61,15 @@ class VideoStreamView: UIView {
 
 public final class VideoStreamViewController: UIViewController {
     
+    public static let descriptor = try! Renderer.Repository.shared.register(
+        renderer: Renderer(
+            descriptor:Renderer.Desciptor(
+                id: "com.onemobilesdk.videorenderer.flat",
+                version: "1.0"),
+            provider: RendererViewController.init
+        )
+    )
+    
     private var observer: PlayerObserver?
     private var timeObserver: Any?
     private var seekerController: SeekerController? = nil

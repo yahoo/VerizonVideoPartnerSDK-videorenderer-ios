@@ -44,8 +44,8 @@ class SphereView: GLKView {
             let columns = 90
             
             /* generate vertices */ do {
-                let deltaAlpha = Float(2.0 * M_PI) / Float(columns)
-                let deltaBeta = Float(M_PI) / Float(rows)
+                let deltaAlpha = 2.0 * Float.pi / .init(columns)
+                let deltaBeta = Float.pi / .init(rows)
                 for row in 0...rows {
                     let beta = Float(row) * deltaBeta
                     let y = radius * cosf(beta)

@@ -15,11 +15,32 @@ import Foundation
 import CoreMedia
 import AVFoundation
 
-open class RendererViewController: UIViewController {
-    convenience init(context: [String: AnyObject] = [:]) {
-        self.init(nibName: nil, bundle: nil)
-    }
+public protocol RendererProtocol: class {
+    var viewController: UIViewController { get }
+    var props: Renderer.Props? { get set }
+    var dispatch: Renderer.Dispatch? { get set }
+}
+
+extension RendererProtocol where Self: UIViewController {
+    public var viewController: UIViewController { return self }
+}
+
+public struct Renderer {
+    public typealias `Protocol` = RendererProtocol
+    public typealias Context = [String: AnyObject]
+    public typealias Provider = (Context) -> Protocol
     
+
+    public let descriptor: Desciptor
+    public let provider: Provider
+    
+    public init(descriptor: Desciptor, provider: @escaping Provider) {
+        self.descriptor = descriptor
+        self.provider = provider
+    }
+}
+
+extension Renderer {
     public struct Props {
         public var angle: (vertical: Float, horizontal: Float)
         public var content: URL
@@ -39,6 +60,10 @@ open class RendererViewController: UIViewController {
             self.newTime = newTime
         }
     }
+}
+
+extension Renderer {
+    public typealias Dispatch = (Event) -> Void
     
     public enum Event {
         case playbackReady
@@ -50,23 +75,6 @@ open class RendererViewController: UIViewController {
         case durationReceived(CMTime)
         case currentTimeUpdated(CMTime)
         case loadedRangesUpdated([CMTimeRange])
-    }
-    
-    public var props: Props?
-    public var dispatch: Optional<(Event) -> ()> = nil
-}
-
-public struct Renderer {
-    public typealias ViewController = RendererViewController
-    public typealias Context = [String: AnyObject]
-    public typealias Provider = (Context) -> ViewController
-
-    public let descriptor: Desciptor
-    public let provider: Provider
-    
-    public init(descriptor: Desciptor, provider: @escaping Provider) {
-        self.descriptor = descriptor
-        self.provider = provider
     }
 }
 
@@ -117,7 +125,7 @@ extension Renderer {
         }
         
         public func makeViewControllerFor(descriptor: Desciptor,
-                                          context: Context = [:]) -> ViewController? {
+                                          context: Context = [:]) -> Protocol? {
             return renderers[descriptor].map { $0(context) }
         }
         

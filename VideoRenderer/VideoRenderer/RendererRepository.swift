@@ -26,9 +26,7 @@ extension RendererProtocol where Self: UIViewController {
 }
 
 public struct Renderer {
-    public typealias `Protocol` = RendererProtocol
-    public typealias Context = [String: AnyObject]
-    public typealias Provider = (Context) -> Protocol
+    public typealias Provider = () -> RendererProtocol
     
 
     public let descriptor: Desciptor
@@ -124,9 +122,8 @@ extension Renderer {
             return Array(renderers.keys)
         }
         
-        public func makeViewControllerFor(descriptor: Desciptor,
-                                          context: Context = [:]) -> Protocol? {
-            return renderers[descriptor].map { $0(context) }
+        public func makeViewControllerFor(descriptor: Desciptor) -> RendererProtocol? {
+            return renderers[descriptor].map({ $0() })
         }
         
         @discardableResult public func register(renderer: Renderer) -> Desciptor {

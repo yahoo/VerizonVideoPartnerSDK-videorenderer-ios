@@ -7,7 +7,7 @@ public final class ContentRendererViewController: UIViewController {
     
     public enum Props {
         case sphere(SphereVideoStreamViewController.Props)
-        case flat(VideoStreamViewController.Props)
+        case flat(Renderer.Props)
     }
     
     public var props: Props? {

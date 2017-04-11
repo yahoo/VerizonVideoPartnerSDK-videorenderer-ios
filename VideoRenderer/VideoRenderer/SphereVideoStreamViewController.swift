@@ -46,7 +46,7 @@ public class SphereVideoStreamViewController: GLKViewController {
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
         guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
-            fatalError("Pixel buffer base address is nil!")
+            preconditionFailure("Pixel buffer base address is nil!")
         }
         
         sphereview?.updateTexture(

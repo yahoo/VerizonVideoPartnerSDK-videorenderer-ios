@@ -59,14 +59,14 @@ class VideoStreamView: UIView {
     }
 }
 
-public final class VideoStreamViewController: UIViewController {
+public final class VideoStreamViewController: UIViewController, RendererProtocol {
     
     public static let descriptor = try! Renderer.Repository.shared.register(
         renderer: Renderer(
             descriptor:Renderer.Desciptor(
                 id: "com.onemobilesdk.videorenderer.flat",
                 version: "1.0"),
-            provider: RendererViewController.init
+            provider: { _ in VideoStreamViewController() }
         )
     )
     
@@ -102,7 +102,9 @@ public final class VideoStreamViewController: UIViewController {
         }
     }
     
-    public var props: Props? {
+    public var dispatch: Renderer.Dispatch?
+    
+    public var props: Renderer.Props? {
         didSet {
             guard let props = props, view.window != nil else {
                 if let timeObserver = timeObserver {
@@ -123,7 +125,7 @@ public final class VideoStreamViewController: UIViewController {
             if
                 let player = player,
                 let asset = player.currentItem?.asset as? AVURLAsset,
-                props.player.url == asset.url {
+                props.content == asset.url {
                 currentPlayer = player
             } else {
                 if let timeObserver = timeObserver {
@@ -131,10 +133,15 @@ public final class VideoStreamViewController: UIViewController {
                 }
                 timeObserver = nil
 
-                currentPlayer = AVPlayer(url: props.player.url)
+                currentPlayer = AVPlayer(url: props.content)
+                
+                var callbacks = PlayerObserver.Callbacks()
+                callbacks.rateChanged = { new, old in
+                    
+                }
                 
                 observer = PlayerObserver(
-                    callbacks: props.player.callbacks,
+                    callbacks: callbacks,
                     player: currentPlayer)
                 player = currentPlayer
                 seekerController = SeekerController(with: currentPlayer)
@@ -142,30 +149,26 @@ public final class VideoStreamViewController: UIViewController {
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
-            videoView?.resizeOptions = VideoStreamView.ResizeOptions(
-                allowVerticalBars: props.allowVerticalBars,
-                allowHorizontalBars: props.allowHorizontalBars
-            )
+//            videoView?.resizeOptions = VideoStreamView.ResizeOptions(
+//                allowVerticalBars: props.allowVerticalBars,
+//                allowHorizontalBars: props.allowHorizontalBars
+//            )
 
-            seekerController?.process(to: props.player.newTime)
+            seekerController?.process(to: props.newTime)
 
             if timeObserver == nil {
                 timeObserver = currentPlayer.addPeriodicTimeObserver(
                     forInterval: CMTime(seconds: 0.2, preferredTimescale: 600),
                     queue: nil,
                     using: { [weak self] time in
-                        self?.props?.player.didPlayToTime(time)
+                        self?.dispatch?(.currentTimeUpdated(time))
                     })
             }
             
-            currentPlayer.isMuted = props.player.isMuted
+            currentPlayer.volume = props.volume
             
-            if currentPlayer.rate == 1 && !props.player.isPlaying {
-                currentPlayer.pause()
-            }
-            
-            if currentPlayer.rate == 0 && props.player.isPlaying {
-                currentPlayer.play()
+            if currentPlayer.rate != props.rate {
+                currentPlayer.rate = props.rate
             }
         }
     }

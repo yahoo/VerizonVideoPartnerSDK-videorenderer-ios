@@ -40,18 +40,18 @@ public struct Renderer {
 
 extension Renderer {
     public struct Props {
-        public var angle: (vertical: Float, horizontal: Float)
+        public var angles: (vertical: Float, horizontal: Float)
         public var content: URL
         public var rate: Float
         public var volume: Float
         public var newTime: CMTime?
         
-        public init(angle: (vertical: Float, horizontal: Float),
+        public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
                     rate: Float,
                     volume: Float,
                     newTime: CMTime?) {
-            self.angle = angle
+            self.angles = angles
             self.content = content
             self.rate = rate
             self.volume = volume

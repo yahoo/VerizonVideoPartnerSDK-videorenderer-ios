@@ -72,7 +72,7 @@ extension Renderer {
         
         case durationReceived(CMTime)
         case currentTimeUpdated(CMTime)
-        case loadedRangesUpdated([CMTimeRange])
+        case bufferedTimeUpdated(CMTime)
     }
 }
 

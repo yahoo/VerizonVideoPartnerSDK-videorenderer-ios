@@ -6,7 +6,7 @@ import AVFoundation
 public final class ContentRendererViewController: UIViewController {
     
     public enum Props {
-        case sphere(SphereVideoStreamViewController.Props)
+        case sphere(Renderer.Props)
         case flat(Renderer.Props)
     }
     

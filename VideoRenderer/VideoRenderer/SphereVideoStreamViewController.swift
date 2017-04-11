@@ -7,7 +7,7 @@ private let sharedContext: EAGLContext = {
     return EAGLContext(api: .openGLES3) ?? EAGLContext(api: .openGLES2)
 }()
 
-public class SphereVideoStreamViewController: GLKViewController {
+public class SphereVideoStreamViewController: GLKViewController, RendererProtocol {
     private var player: AVPlayer?
     private var output: AVPlayerItemVideoOutput?
     private var observer: PlayerObserver?
@@ -68,7 +68,8 @@ public class SphereVideoStreamViewController: GLKViewController {
         }
     }
     
-    public var props: Props? {
+    public var dispatch: Renderer.Dispatch?
+    public var props: Renderer.Props? {
         didSet {
             guard let props = props, view.window != nil else {
                 if let timeObserver = timeObserver {
@@ -89,7 +90,7 @@ public class SphereVideoStreamViewController: GLKViewController {
             if
                 let player = player,
                 let asset = player.currentItem?.asset as? AVURLAsset,
-                props.player.url == asset.url
+                props.content == asset.url
             {
                 currentPlayer = player
             } else {
@@ -98,10 +99,40 @@ public class SphereVideoStreamViewController: GLKViewController {
                 }
                 timeObserver = nil
 
-                currentPlayer = AVPlayer(url: props.player.url)
+                currentPlayer = AVPlayer(url: props.content)
+                
+                weak var this = self
+                var callbacks = PlayerObserver.Callbacks()
+                
+                callbacks.failedState = {
+                    this?.dispatch?(.playbackFailed($0))
+                }
+                
+                callbacks.rateChanged = { new, old in
+                    guard new != old else { return }
+                    if new == 0 { this?.dispatch?(.playbackStopped) }
+                    else { this?.dispatch?(.playbackStarted) }
+                }
+                
+                callbacks.durationDefined = { duration, _ in
+                    this?.dispatch?(.durationReceived(duration))
+                }
+                
+                callbacks.endOfVideo = {
+                    this?.dispatch?(.playbackFinished)
+                }
+                
+                callbacks.playbackReady = {
+                    guard $0 == true else { return }
+                    this?.dispatch?(.playbackReady)
+                }
+                
+                callbacks.bufferedTimeUpdated = {
+                    this?.dispatch?(.bufferedTimeUpdated($0))
+                }
                 
                 observer = PlayerObserver(
-                    callbacks: props.player.callbacks,
+                    callbacks: callbacks,
                     player: currentPlayer)
                 player = currentPlayer
                 seekerController = SeekerController(with: currentPlayer)
@@ -124,25 +155,21 @@ public class SphereVideoStreamViewController: GLKViewController {
         
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
-            seekerController?.process(to: props.player.newTime)
+            seekerController?.process(to: props.newTime)
             
             if timeObserver == nil {
                 timeObserver = currentPlayer.addPeriodicTimeObserver(
                     forInterval: CMTime(seconds: 0.2, preferredTimescale: 600),
                     queue: nil,
                     using: { [weak self] time in
-                        self?.props?.player.didPlayToTime(time)
+                        self?.dispatch?(.currentTimeUpdated(time))
                     })
             }
             
-            currentPlayer.isMuted = props.player.isMuted
+            currentPlayer.volume = props.volume
             
-            if currentPlayer.rate == 1, !props.player.isPlaying {
-                currentPlayer.pause()
-            }
-            
-            if currentPlayer.rate == 0, props.player.isPlaying {
-                currentPlayer.play()
+            if currentPlayer.rate != props.rate {
+                currentPlayer.rate = props.rate
             }
             
             sphereview?.setNeedsDisplay()

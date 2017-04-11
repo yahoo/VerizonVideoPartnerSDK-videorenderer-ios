@@ -136,8 +136,33 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 currentPlayer = AVPlayer(url: props.content)
                 
                 var callbacks = PlayerObserver.Callbacks()
+                weak var this = self
+                
+                callbacks.failedState = {
+                    this?.dispatch?(.playbackFailed($0))
+                }
+                
                 callbacks.rateChanged = { new, old in
-                    
+                    guard new != old else { return }
+                    if new == 0 { this?.dispatch?(.playbackStopped) }
+                    else { this?.dispatch?(.playbackStarted) }
+                }
+                
+                callbacks.durationDefined = { duration, _ in
+                    this?.dispatch?(.durationReceived(duration))
+                }
+                
+                callbacks.endOfVideo = {
+                    this?.dispatch?(.playbackFinished)
+                }
+                
+                callbacks.playbackReady = {
+                    guard $0 == true else { return }
+                    this?.dispatch?(.playbackReady)
+                }
+                
+                callbacks.bufferedTimeUpdated = {
+                    this?.dispatch?(.bufferedTimeUpdated($0))
                 }
                 
                 observer = PlayerObserver(

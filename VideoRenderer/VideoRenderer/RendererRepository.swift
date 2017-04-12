@@ -29,10 +29,10 @@ public struct Renderer {
     public typealias Provider = () -> RendererProtocol
     
 
-    public let descriptor: Desciptor
+    public let descriptor: Descriptor
     public let provider: Provider
     
-    public init(descriptor: Desciptor, provider: @escaping Provider) {
+    public init(descriptor: Descriptor, provider: @escaping Provider) {
         self.descriptor = descriptor
         self.provider = provider
     }
@@ -77,7 +77,7 @@ extension Renderer {
 }
 
 extension Renderer {
-    public struct Desciptor {
+    public struct Descriptor {
         /// Example: com.aol.onemobilesdk.flat
         public let id: String
         
@@ -99,8 +99,8 @@ extension Renderer {
     }
 }
 
-extension Renderer.Desciptor: Equatable {
-    public static func == (left: Renderer.Desciptor, right: Renderer.Desciptor) -> Bool {
+extension Renderer.Descriptor: Equatable {
+    public static func == (left: Renderer.Descriptor, right: Renderer.Descriptor) -> Bool {
         guard left.id == right.id else { return false }
         guard left.version == right.version else { return false }
         
@@ -108,7 +108,7 @@ extension Renderer.Desciptor: Equatable {
     }
 }
 
-extension Renderer.Desciptor: Hashable {
+extension Renderer.Descriptor: Hashable {
     public var hashValue: Int { return id.hashValue ^ version.hashValue }
 }
 
@@ -116,17 +116,17 @@ extension Renderer {
     public final class Repository {
         public static let shared = Repository()
         
-        private var renderers: [Desciptor: Provider] = [:]
+        private var renderers: [Descriptor: Provider] = [:]
         
-        public var availableRenderers: [Desciptor] {
+        public var availableRenderers: [Descriptor] {
             return Array(renderers.keys)
         }
         
-        public func makeViewControllerFor(descriptor: Desciptor) -> RendererProtocol? {
+        public func makeViewControllerFor(descriptor: Descriptor) -> RendererProtocol? {
             return renderers[descriptor].map({ $0() })
         }
         
-        @discardableResult public func register(renderer: Renderer) -> Desciptor {
+        @discardableResult public func register(renderer: Renderer) -> Descriptor {
             renderers[renderer.descriptor] = renderer.provider
             return renderer.descriptor
         }

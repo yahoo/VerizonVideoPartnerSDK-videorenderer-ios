@@ -63,7 +63,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     
     public static let descriptor = try! Renderer.Repository.shared.register(
         renderer: Renderer(
-            descriptor:Renderer.Desciptor(
+            descriptor:Renderer.Descriptor(
                 id: "com.onemobilesdk.videorenderer.flat",
                 version: "1.0"),
             provider: { _ in VideoStreamViewController() }

@@ -10,8 +10,8 @@ private let sharedContext: EAGLContext = {
 public class SphereVideoStreamViewController: GLKViewController, RendererProtocol {
     
     public static let descriptor = try! Renderer.Repository.shared.register(renderer: Renderer(
-        descriptor: Renderer.Desciptor.init(
-            id: "com.onemobilesdk.videorenderer.sphere",
+        descriptor: Renderer.Descriptor(
+            id: "com.onemobilesdk.videorenderer.360",
             version: "1.0"),
         provider: { _ in SphereVideoStreamViewController.init() }))
     
@@ -105,7 +105,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                     player?.removeTimeObserver(timeObserver)
                 }
                 timeObserver = nil
-
+                
                 currentPlayer = AVPlayer(url: props.content)
                 
                 weak var this = self
@@ -156,10 +156,10 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 currentPlayer.currentItem?.add(videoOutput)
                 output = videoOutput
             }
-        
+            
             sphereview?.camera.pitch = .init(props.angles.vertical)
             sphereview?.camera.yaw = .init(props.angles.horizontal)
-        
+            
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
             seekerController?.process(to: props.newTime)
@@ -170,7 +170,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                     queue: nil,
                     using: { [weak self] time in
                         self?.dispatch?(.currentTimeUpdated(time))
-                    })
+                })
             }
             
             currentPlayer.volume = props.volume

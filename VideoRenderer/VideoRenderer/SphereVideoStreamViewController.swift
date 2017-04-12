@@ -8,6 +8,13 @@ private let sharedContext: EAGLContext = {
 }()
 
 public class SphereVideoStreamViewController: GLKViewController, RendererProtocol {
+    
+    public static let descriptor = try! Renderer.Repository.shared.register(renderer: Renderer(
+        descriptor: Renderer.Desciptor.init(
+            id: "com.onemobilesdk.videorenderer.sphere",
+            version: "1.0"),
+        provider: { _ in SphereVideoStreamViewController.init() }))
+    
     private var player: AVPlayer?
     private var output: AVPlayerItemVideoOutput?
     private var observer: PlayerObserver?

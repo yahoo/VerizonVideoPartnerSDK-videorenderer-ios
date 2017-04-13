@@ -131,9 +131,8 @@ extension Renderer {
             return renderers[descriptor].map({ $0() })
         }
         
-        @discardableResult public func register(renderer: Renderer) -> Descriptor {
+        public func register(renderer: Renderer) {
             renderers[renderer.descriptor] = renderer.provider
-            return renderer.descriptor
         }
         
         public func remove(renderer: Renderer) {

@@ -116,6 +116,11 @@ extension Renderer {
     public final class Repository {
         public static let shared = Repository()
         
+        init() {
+            register(renderer: VideoStreamViewController.renderer)
+            register(renderer: SphereVideoStreamViewController.renderer)
+        }
+        
         private var renderers: [Descriptor: Provider] = [:]
         
         public var availableRenderers: [Descriptor] {

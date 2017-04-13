@@ -59,15 +59,18 @@ class VideoStreamView: UIView {
     }
 }
 
+extension Renderer.Descriptor {
+    public static let flat = try! Renderer.Descriptor(
+        id: "com.onemobilesdk.videorenderer.flat",
+        version: "1.0"
+    )
+}
+
+
 public final class VideoStreamViewController: UIViewController, RendererProtocol {
-    
-    public static let descriptor = try! Renderer.Repository.shared.register(
-        renderer: Renderer(
-            descriptor:Renderer.Descriptor(
-                id: "com.onemobilesdk.videorenderer.flat",
-                version: "1.0"),
-            provider: { _ in VideoStreamViewController() }
-        )
+    public static let renderer = Renderer(
+        descriptor: .flat,
+        provider: { VideoStreamViewController() }
     )
     
     private var observer: PlayerObserver?

@@ -7,13 +7,18 @@ private let sharedContext: EAGLContext = {
     return EAGLContext(api: .openGLES3) ?? EAGLContext(api: .openGLES2)
 }()
 
+extension Renderer.Descriptor {
+    public static let sphere = try! Renderer.Descriptor(
+        id: "com.onemobilesdk.videorenderer.360",
+        version: "1.0"
+    )
+}
+
 public class SphereVideoStreamViewController: GLKViewController, RendererProtocol {
-    
-    public static let descriptor = try! Renderer.Repository.shared.register(renderer: Renderer(
-        descriptor: Renderer.Descriptor(
-            id: "com.onemobilesdk.videorenderer.360",
-            version: "1.0"),
-        provider: { _ in SphereVideoStreamViewController.init() }))
+    public static let renderer = Renderer(
+        descriptor: .sphere,
+        provider: { SphereVideoStreamViewController() }
+    )
     
     private var player: AVPlayer?
     private var output: AVPlayerItemVideoOutput?

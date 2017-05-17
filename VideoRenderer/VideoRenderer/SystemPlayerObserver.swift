@@ -3,12 +3,12 @@
 import Foundation
 import AVFoundation
 
-final class SystemPlayerObserver: NSObject {
-    enum Event {
+public final class SystemPlayerObserver: NSObject {
+    public enum Event {
         case didChangeRate(from: Float?, to: Float)
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatus(from: AVPlayerItemStatus?, to: AVPlayerItemStatus)
-        case didChangeItemDuration(from: TimeInterval?, to: TimeInterval?)
+        case didChangeItemDuration(from: CMTime?, to: CMTime?)
         case didFinishPlayback(withUrl: URL)
         case didChangeItemPlaybackBufferFull(from: Bool?, to: Bool)
         case didChangeItemPlaybackLikelyToKeepUp(from: Bool?, to: Bool)
@@ -17,7 +17,7 @@ final class SystemPlayerObserver: NSObject {
     
     private var emit: Action<Event>
     private var player: AVPlayer
-    init(player: AVPlayer, emit: @escaping Action<Event>) {
+    public init(player: AVPlayer, emit: @escaping Action<Event>) {
         self.emit = emit
         self.player = player
         
@@ -49,10 +49,10 @@ final class SystemPlayerObserver: NSObject {
         emit(.didFinishPlayback(withUrl: urlAsset.url))
     }
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
+    override public func observeValue(forKeyPath keyPath: String?,
+                                      of object: Any?,
+                                      change: [NSKeyValueChangeKey : Any]?,
+                                      context: UnsafeMutableRawPointer?) {
         guard let keyPath = keyPath else { fatalError("Unexpected nil keypath!") }
         guard let change = change else { fatalError("Change should not be nil!") }
         

@@ -31,11 +31,6 @@ public final class SystemPlayerObserver: NSObject {
                            forKeyPath: #keyPath(AVPlayer.currentItem),
                            options: [.initial, .new, .old],
                            context: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(SystemPlayerObserver.didPlayToEnd(notification:)),
-            name: Notification.Name.AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem)
     }
     
     func didPlayToEnd(notification: NSNotification) {
@@ -75,38 +70,58 @@ public final class SystemPlayerObserver: NSObject {
         case #keyPath(AVPlayer.rate):
             emit(.didChangeRate(from: oldValue(), to: newValueUnwrapped()))
         case #keyPath(AVPlayer.currentItem):
+            
             let newItem = newValue() as AVPlayerItem?
-            newItem?.addObserver(self,
-                                 forKeyPath: #keyPath(AVPlayerItem.status),
-                                 options: [.initial, .new, .old],
-                                 context: nil)
-            newItem?.addObserver(self,
-                                 forKeyPath: #keyPath(AVPlayerItem.duration),
-                                 options: [.initial, .new, .old],
-                                 context: nil)
-            newItem?.addObserver(self,
-                                 forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull),
-                                 options: [.initial, .new, .old],
-                                 context: nil)
-            newItem?.addObserver(self,
-                                 forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp),
-                                 options: [.initial, .new, .old],
-                                 context: nil)
-            newItem?.addObserver(self,
-                                 forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges),
-                                 options: [.initial, .new],
-                                 context: nil)
+            /* Process new item */ do {
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.status),
+                                     options: [.initial, .new, .old],
+                                     context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.duration),
+                                     options: [.initial, .new, .old],
+                                     context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull),
+                                     options: [.initial, .new, .old],
+                                     context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp),
+                                     options: [.initial, .new, .old],
+                                     context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges),
+                                     options: [.initial, .new],
+                                     context: nil)
+                if let new = newItem {
+                    NotificationCenter.default.addObserver(
+                        self,
+                        selector: #selector(SystemPlayerObserver.didPlayToEnd(notification:)),
+                        name: .AVPlayerItemDidPlayToEndTime,
+                        object: new)
+                }
+            }
+            
             let oldItem = oldValue() as AVPlayerItem?
-            oldItem?.removeObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.status))
-            oldItem?.removeObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.duration))
-            oldItem?.removeObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull))
-            oldItem?.removeObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
-            oldItem?.removeObserver(self,
-                                    forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+            /* Process old item */ do {
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.status))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.duration))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+                if let old = oldItem {
+                    NotificationCenter.default.removeObserver(
+                        self,
+                        name: .AVPlayerItemDidPlayToEndTime,
+                        object: old)
+                }
+            }
+
             let oldUrl: URL? = {
                 guard let oldItem = oldItem else { return nil }
                 guard let asset = oldItem.asset as? AVURLAsset else {
@@ -166,7 +181,7 @@ public final class SystemPlayerObserver: NSObject {
                               forKeyPath: #keyPath(AVPlayer.currentItem))
         NotificationCenter.default.removeObserver(
             self,
-            name: Notification.Name.AVPlayerItemDidPlayToEndTime,
+            name: .AVPlayerItemDidPlayToEndTime,
             object: player.currentItem)
     }
 }

@@ -118,7 +118,12 @@ extension Renderer {
         
         init() {
             register(renderer: VideoStreamViewController.renderer)
+            // Concept of renderers is not used on tvOS yet.
+            // The only supported type is flat rendering - so
+            // it is the only one that should be registered for tvOS.
+            #if os(iOS)
             register(renderer: SphereVideoStreamViewController.renderer)
+            #endif
         }
         
         private var renderers: [Descriptor: Provider] = [:]

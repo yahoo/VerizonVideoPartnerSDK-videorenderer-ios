@@ -108,7 +108,7 @@ extension SystemPlayer {
         }
         
         func handleNotification(notification: NSNotification) {
-            self.print(event: "\(notification.name): \(notification.userInfo)")
+            self.print(event: "\(notification.name): \(String(describing: notification.userInfo))")
         }
         //swiftlint:disable cyclomatic_complexity
         override func observeValue(forKeyPath keyPath: String?,

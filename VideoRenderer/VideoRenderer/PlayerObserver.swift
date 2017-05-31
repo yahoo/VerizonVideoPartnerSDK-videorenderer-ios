@@ -133,7 +133,7 @@ public final class PlayerObserver: NSObject {
             }
             
         case &Context.buffer:
-            guard let player = object as? AVPlayer else { fatalError("\(object) is not a player") }
+            guard let player = object as? AVPlayer else { fatalError("\(String(describing: object)) is not a player") }
             guard let item = player.currentItem else { return }
             
             let isReady = item.isPlaybackBufferFull || item.isPlaybackLikelyToKeepUp

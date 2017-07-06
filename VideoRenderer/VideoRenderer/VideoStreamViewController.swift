@@ -1,6 +1,7 @@
 //  Copyright © 2016 One by Aol : Publishers. All rights reserved.
 
 import AVFoundation
+import AVKit
 
 class VideoStreamView: UIView {
     /// `AVPlayerLayer` class is returned as view backing layer.
@@ -8,7 +9,7 @@ class VideoStreamView: UIView {
         return AVPlayerLayer.self
     }
     
-    private var playerLayer: AVPlayerLayer? {
+    fileprivate var playerLayer: AVPlayerLayer? {
         return layer as? AVPlayerLayer
     }
     
@@ -76,6 +77,12 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     private var observer: PlayerObserver?
     private var timeObserver: Any?
     private var seekerController: SeekerController? = nil
+    private var pictureInPictureController: AnyObject?
+    
+    private var playerLayer: AVPlayerLayer? {
+        return videoView?.playerLayer
+    }
+    
     
     override public func loadView() {
         view = VideoStreamView()
@@ -198,6 +205,40 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             if currentPlayer.rate != props.rate {
                 currentPlayer.rate = props.rate
             }
+            
+            #if os(iOS)
+                guard #available(iOS 9.0, *) else { return }
+                
+                if props.pictureInPictureActive,
+                    pictureInPictureController == nil,
+                    let playerLayer = playerLayer {
+                    
+                    let pipController = AVPictureInPictureController(playerLayer: playerLayer)
+                    pipController?.delegate = self
+                    
+                    pictureInPictureController = pipController
+                }
+                
+                guard let pictureInPictureController = pictureInPictureController as? AVPictureInPictureController else { return }
+                
+                if props.pictureInPictureActive && !pictureInPictureController.isPictureInPictureActive {
+                    pictureInPictureController.startPictureInPicture()
+                }
+                
+                if !props.pictureInPictureActive && pictureInPictureController.isPictureInPictureActive {
+                    pictureInPictureController.stopPictureInPicture()
+                }
+            #endif
         }
     }
 }
+
+#if os(iOS)
+@available(iOS 9.0, *)
+extension VideoStreamViewController: AVPictureInPictureControllerDelegate {
+    
+    public func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        self.dispatch?(.pictureInPictureStopped)
+    }
+}
+#endif

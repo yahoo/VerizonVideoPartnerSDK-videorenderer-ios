@@ -209,24 +209,26 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             #if os(iOS)
                 guard #available(iOS 9.0, *) else { return }
                 
-                if props.pictureInPictureActive,
-                    pictureInPictureController == nil,
-                    let playerLayer = playerLayer {
-                    
-                    let pipController = AVPictureInPictureController(playerLayer: playerLayer)
-                    pipController?.delegate = self
-                    
-                    pictureInPictureController = pipController
+                let pipController: AVPictureInPictureController? = {
+                    if let pipController = self.pictureInPictureController as? AVPictureInPictureController {
+                        return pipController
+                    } else {
+                        guard
+                            let layer = view.layer as? AVPlayerLayer,
+                            props.pictureInPictureActive else { return nil }
+                        let pipController = AVPictureInPictureController(playerLayer: layer)
+                        pipController?.delegate = self
+                        self.pictureInPictureController = pipController
+                        return pipController
+                    }
+                }()
+                
+                if props.pictureInPictureActive && pipController?.isPictureInPictureActive == false {
+                    pipController?.startPictureInPicture()
                 }
                 
-                guard let pictureInPictureController = pictureInPictureController as? AVPictureInPictureController else { return }
-                
-                if props.pictureInPictureActive && !pictureInPictureController.isPictureInPictureActive {
-                    pictureInPictureController.startPictureInPicture()
-                }
-                
-                if !props.pictureInPictureActive && pictureInPictureController.isPictureInPictureActive {
-                    pictureInPictureController.stopPictureInPicture()
+                if !props.pictureInPictureActive && pipController?.isPictureInPictureActive == true {
+                    pipController?.stopPictureInPicture()
                 }
             #endif
         }
@@ -236,8 +238,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
 #if os(iOS)
 @available(iOS 9.0, *)
 extension VideoStreamViewController: AVPictureInPictureControllerDelegate {
-    
-    public func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+    public func pictureInPictureControllerDidStopPictureInPicture(
+        _ pictureInPictureController: AVPictureInPictureController) {
         self.dispatch?(.pictureInPictureStopped)
     }
 }

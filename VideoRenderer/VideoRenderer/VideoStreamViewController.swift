@@ -79,11 +79,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     private var seekerController: SeekerController? = nil
     private var pictureInPictureController: AnyObject?
     
-    private var playerLayer: AVPlayerLayer? {
-        return videoView?.playerLayer
-    }
-    
-    
     override public func loadView() {
         view = VideoStreamView()
     }
@@ -207,14 +202,14 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             }
             
             #if os(iOS)
-                guard #available(iOS 9.0, *) else { return }
+                guard #available(iOS 9.0, *), isViewLoaded else { return }
                 
                 let pipController: AVPictureInPictureController? = {
                     if let pipController = self.pictureInPictureController as? AVPictureInPictureController {
                         return pipController
                     } else {
                         guard
-                            let layer = view.layer as? AVPlayerLayer,
+                            let layer = videoView?.playerLayer,
                             props.pictureInPictureActive else { return nil }
                         let pipController = AVPictureInPictureController(playerLayer: layer)
                         pipController?.delegate = self
@@ -240,7 +235,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
 extension VideoStreamViewController: AVPictureInPictureControllerDelegate {
     public func pictureInPictureControllerDidStopPictureInPicture(
         _ pictureInPictureController: AVPictureInPictureController) {
-        self.dispatch?(.pictureInPictureStopped)
+        dispatch?(.pictureInPictureStopped)
     }
 }
 #endif

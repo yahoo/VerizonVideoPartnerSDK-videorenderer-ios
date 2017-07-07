@@ -45,17 +45,20 @@ extension Renderer {
         public var rate: Float
         public var volume: Float
         public var newTime: CMTime?
+        public var pictureInPictureActive: Bool
         
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
                     rate: Float,
                     volume: Float,
-                    newTime: CMTime?) {
+                    newTime: CMTime?,
+                    pictureInPictureActive: Bool) {
             self.angles = angles
             self.content = content
             self.rate = rate
             self.volume = volume
             self.newTime = newTime
+            self.pictureInPictureActive = pictureInPictureActive
         }
     }
 }
@@ -73,6 +76,7 @@ extension Renderer {
         case durationReceived(CMTime)
         case currentTimeUpdated(CMTime)
         case bufferedTimeUpdated(CMTime)
+        case pictureInPictureStopped
     }
 }
 

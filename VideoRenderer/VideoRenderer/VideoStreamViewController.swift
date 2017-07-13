@@ -75,6 +75,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     )
     
     private var observer: PlayerObserver?
+    private var pictureInPictureObserver: PictureInPictureControllerObserver?
+    
     private var timeObserver: Any?
     private var seekerController: SeekerController? = nil
     private var pictureInPictureController: AnyObject?
@@ -119,6 +121,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 player?.replaceCurrentItem(with: nil)
                 player = nil
                 observer = nil
+                pictureInPictureObserver = nil
                 timeObserver = nil
                 seekerController = nil
                 
@@ -210,10 +213,14 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     } else {
                         guard
                             let layer = videoView?.playerLayer,
-                            props.pictureInPictureActive else { return nil }
-                        let pipController = AVPictureInPictureController(playerLayer: layer)
-                        pipController?.delegate = self
-                        self.pictureInPictureController = pipController
+                            let pipController = AVPictureInPictureController(playerLayer: layer) else { return nil }
+                        pipController.delegate = self
+                        pictureInPictureController = pipController
+                        pictureInPictureObserver = PictureInPictureControllerObserver(pictureInPictureController: pipController, emit:
+                            { [unowned self] in
+                                guard case PictureInPictureControllerObserver.Event.didChangedPossibility(let possible) = $0 else { return }
+                                self.dispatch?(.pictureInPictureIsPossible(possible))
+                        })
                         return pipController
                     }
                 }()

@@ -22,6 +22,7 @@
 		DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */; };
 		DEA993C01E83FF5300EB3B8A /* VideoGravityStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */; };
 		DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993C11E83FF8200EB3B8A /* Action.swift */; };
+		FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		DEA993BB1E83FF1D00EB3B8A /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SphereVideoStreamViewController.swift; sourceTree = "<group>"; };
 		DEA993C11E83FF8200EB3B8A /* Action.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
+		FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureInPictureControllerObserver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */,
 				DEA993881E83FE0600EB3B8A /* Info.plist */,
 				DE67433C1E8C354F006FCFFC /* RendererRepository.swift */,
+				FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */,
 			);
 			path = VideoRenderer;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */,
 				DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */,
 				DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */,
+				FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */,
 				DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */,
 				DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */,
 				DEA993B21E83FEF300EB3B8A /* SystemPlayerObserver.swift in Sources */,

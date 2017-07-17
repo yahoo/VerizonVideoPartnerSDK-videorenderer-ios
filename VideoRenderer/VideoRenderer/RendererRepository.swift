@@ -77,6 +77,7 @@ extension Renderer {
         case currentTimeUpdated(CMTime)
         case bufferedTimeUpdated(CMTime)
         case pictureInPictureStopped
+        case pictureInPictureIsPossible(Bool)
     }
 }
 

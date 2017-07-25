@@ -12,8 +12,9 @@ public final class PictureInPictureControllerObserver: NSObject {
     private let keyPathPiPPossible: String? = {
         #if os(iOS)
             return #keyPath(AVPictureInPictureController.pictureInPicturePossible)
+        #else
+            return nil
         #endif
-        return nil
     }()
     
     private let emit: Action<Event>

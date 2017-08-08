@@ -128,6 +128,18 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 return
             }
             
+            #if os(iOS)
+                if #available(iOS 9.0, *), isViewLoaded {
+                    if pictureInPictureController == nil,
+                        let layer = videoView?.playerLayer,
+                        let pipController = AVPictureInPictureController(playerLayer: layer) {
+                        pipController.delegate = self
+                        pictureInPictureController = pipController
+                    }
+                }
+                
+            #endif
+            
             let currentPlayer: AVPlayer
             
             if
@@ -178,6 +190,15 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     player: currentPlayer)
                 player = currentPlayer
                 seekerController = SeekerController(with: currentPlayer)
+                
+                if let pictureInPictureController = pictureInPictureController {
+                    pictureInPictureObserver = PictureInPictureControllerObserver(
+                        pictureInPictureController: pictureInPictureController,
+                        emit: { [weak self] in
+                            guard case .didChangedPossibility(let possible) = $0 else { return }
+                            self?.dispatch?(.pictureInPictureIsPossible(possible))
+                    })
+                }
             }
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
@@ -205,32 +226,16 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             }
             
             #if os(iOS)
-                guard #available(iOS 9.0, *), isViewLoaded else { return }
-                
-                let pipController: AVPictureInPictureController? = {
-                    if let pipController = self.pictureInPictureController as? AVPictureInPictureController {
-                        return pipController
-                    } else {
-                        guard
-                            let layer = videoView?.playerLayer,
-                            let pipController = AVPictureInPictureController(playerLayer: layer) else { return nil }
-                        pipController.delegate = self
-                        pictureInPictureController = pipController
-                        pictureInPictureObserver = PictureInPictureControllerObserver(pictureInPictureController: pipController, emit:
-                            { [unowned self] in
-                                guard case PictureInPictureControllerObserver.Event.didChangedPossibility(let possible) = $0 else { return }
-                                self.dispatch?(.pictureInPictureIsPossible(possible))
-                        })
-                        return pipController
+                if #available(iOS 9.0, *),
+                    let pipController = pictureInPictureController as? AVPictureInPictureController {
+                    
+                    if props.pictureInPictureActive, !pipController.isPictureInPictureActive {
+                        pipController.startPictureInPicture()
                     }
-                }()
-                
-                if props.pictureInPictureActive && pipController?.isPictureInPictureActive == false {
-                    pipController?.startPictureInPicture()
-                }
-                
-                if !props.pictureInPictureActive && pipController?.isPictureInPictureActive == true {
-                    pipController?.stopPictureInPicture()
+                    
+                    if !props.pictureInPictureActive, pipController.isPictureInPictureActive {
+                        pipController.stopPictureInPicture()
+                    }
                 }
             #endif
         }

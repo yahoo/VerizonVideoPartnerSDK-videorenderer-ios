@@ -10,9 +10,7 @@
 		DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE67433C1E8C354F006FCFFC /* RendererRepository.swift */; };
 		DEA9938E1E83FE0600EB3B8A /* VideoRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA993841E83FE0600EB3B8A /* VideoRenderer.framework */; };
 		DEA993951E83FE0600EB3B8A /* VideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DEA993871E83FE0600EB3B8A /* VideoRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */; };
 		DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */; };
-		DEA993B11E83FEF300EB3B8A /* PlayerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AC1E83FEF300EB3B8A /* PlayerObserver.swift */; };
 		DEA993B21E83FEF300EB3B8A /* SystemPlayerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */; };
 		DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */; };
 		DEA993B81E83FF0900EB3B8A /* SeekerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993B51E83FF0900EB3B8A /* SeekerController.swift */; };
@@ -44,9 +42,7 @@
 		DEA993881E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA9938D1E83FE0600EB3B8A /* VideoRendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoRendererTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEA993941E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVPlayerRendererProps.swift; sourceTree = "<group>"; };
 		DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerModel.swift; sourceTree = "<group>"; };
-		DEA993AC1E83FEF300EB3B8A /* PlayerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerObserver.swift; sourceTree = "<group>"; };
 		DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerObserver.swift; sourceTree = "<group>"; };
 		DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoGravityStrategyTests.swift; sourceTree = "<group>"; };
 		DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoStreamViewController.swift; sourceTree = "<group>"; };
@@ -102,9 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				DEA993C11E83FF8200EB3B8A /* Action.swift */,
-				DEA993AA1E83FEF300EB3B8A /* AVPlayerRendererProps.swift */,
 				DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */,
-				DEA993AC1E83FEF300EB3B8A /* PlayerObserver.swift */,
 				DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */,
 				DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */,
 				DEA993871E83FE0600EB3B8A /* VideoRenderer.h */,
@@ -241,10 +235,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEA993B11E83FEF300EB3B8A /* PlayerObserver.swift in Sources */,
 				DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */,
 				DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */,
-				DEA993AF1E83FEF300EB3B8A /* AVPlayerRendererProps.swift in Sources */,
 				FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */,
 				DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */,
 				DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */,

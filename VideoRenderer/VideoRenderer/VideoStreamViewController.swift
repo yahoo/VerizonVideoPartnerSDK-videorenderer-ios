@@ -74,7 +74,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
         provider: { VideoStreamViewController() }
     )
     
-    private var observer: PlayerObserver?
+    private var observer: SystemPlayerObserver?
     private var pictureInPictureObserver: PictureInPictureControllerObserver?
     
     private var timeObserver: Any?
@@ -92,21 +92,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     private var player: AVPlayer? {
         get { return videoView?.player }
         set { videoView?.player = newValue }
-    }
-    
-    public struct Props {
-        public let player: AVPlayerProps
-        public let allowVerticalBars: Bool
-        public let allowHorizontalBars: Bool
-        
-        public init(player: AVPlayerProps,
-                    allowVerticalBars: Bool,
-                    allowHorizontalBars: Bool)
-        {
-            self.player = player
-            self.allowVerticalBars = allowVerticalBars
-            self.allowHorizontalBars = allowHorizontalBars
-        }
     }
     
     public var dispatch: Renderer.Dispatch?
@@ -154,40 +139,40 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 timeObserver = nil
 
                 currentPlayer = AVPlayer(url: props.content)
-                
-                var callbacks = PlayerObserver.Callbacks()
-                weak var this = self
-                
-                callbacks.failedState = {
-                    this?.dispatch?(.playbackFailed($0))
+
+                observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
+                    switch event {
+                    case .didChangeItemStatus(_, let new):
+                        switch new {
+                        case .failed:
+                            let error: Error = {
+                                guard let error = currentPlayer.currentItem?.error else {
+                                    struct UnknownError: Error { let props: Renderer.Props }
+                                    return UnknownError(props: props)
+                                }
+                                return error
+                            }()
+                            self?.dispatch?(.playbackFailed(error))
+                        case .readyToPlay:
+                            self?.dispatch?(.playbackReady)
+                        default: break
+                        }
+                    case .didChangeRate(let old, let new):
+                        guard new != old else { return }
+                        if new == 0 { self?.dispatch?(.playbackStopped) }
+                        else { self?.dispatch?(.playbackStarted) }
+                    case .didChangeItemDuration(_, let new):
+                        guard let new = new else { return }
+                        self?.dispatch?(.durationReceived(new))
+                    case .didFinishPlayback:
+                        self?.dispatch?(.playbackFinished)
+                    case .didChangeLoadedTimeRanges(let new):
+                        guard let end = new.last?.end else { return }
+                        self?.dispatch?(.bufferedTimeUpdated(end))
+                    default: break
+                    }
                 }
                 
-                callbacks.rateChanged = { new, old in
-                    guard new != old else { return }
-                    if new == 0 { this?.dispatch?(.playbackStopped) }
-                    else { this?.dispatch?(.playbackStarted) }
-                }
-                
-                callbacks.durationDefined = { duration, _ in
-                    this?.dispatch?(.durationReceived(duration))
-                }
-                
-                callbacks.endOfVideo = {
-                    this?.dispatch?(.playbackFinished)
-                }
-                
-                callbacks.playbackReady = {
-                    guard $0 == true else { return }
-                    this?.dispatch?(.playbackReady)
-                }
-                
-                callbacks.bufferedTimeUpdated = {
-                    this?.dispatch?(.bufferedTimeUpdated($0))
-                }
-                
-                observer = PlayerObserver(
-                    callbacks: callbacks,
-                    player: currentPlayer)
                 player = currentPlayer
                 seekerController = SeekerController(with: currentPlayer)
                 

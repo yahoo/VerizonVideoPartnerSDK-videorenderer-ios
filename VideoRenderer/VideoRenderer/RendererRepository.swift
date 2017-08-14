@@ -78,6 +78,7 @@ extension Renderer {
         case bufferedTimeUpdated(CMTime)
         case pictureInPictureStopped
         case pictureInPictureIsPossible(Bool)
+        case averageVideoBitrateUpdated(Double)
     }
 }
 

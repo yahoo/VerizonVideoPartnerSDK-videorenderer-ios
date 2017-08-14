@@ -169,6 +169,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     case .didChangeLoadedTimeRanges(let new):
                         guard let end = new.last?.end else { return }
                         self?.dispatch?(.bufferedTimeUpdated(end))
+                    case .didChangeAverageVideoBitrate(let new):
+                        self?.dispatch?(.averageVideoBitrateUpdated(new))
                     default: break
                     }
                 }

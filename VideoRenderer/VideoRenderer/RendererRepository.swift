@@ -67,7 +67,6 @@ extension Renderer {
     public typealias Dispatch = (Event) -> Void
     
     public enum Event {
-        case playbackReady
         case playbackStarted
         case playbackStopped
         case playbackFinished

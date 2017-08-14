@@ -5,13 +5,11 @@ import AVFoundation
 
 public final class SystemPlayerObserver: NSObject {
     public enum Event {
-        case didChangeRate(from: Float?, to: Float)
+        case didChangeRate(to: Float)
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatus(from: AVPlayerItemStatus?, to: AVPlayerItemStatus)
         case didChangeItemDuration(from: CMTime?, to: CMTime?)
         case didFinishPlayback(withUrl: URL)
-        case didChangeItemPlaybackBufferFull(from: Bool?, to: Bool)
-        case didChangeItemPlaybackLikelyToKeepUp(from: Bool?, to: Bool)
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
         case didChangeAverageVideoBitrate(to: Double)
     }
@@ -21,16 +19,12 @@ public final class SystemPlayerObserver: NSObject {
     private let center = NotificationCenter.default
     
     private var accessLogToken = nil as Any?
+    private var timebaseRangeToken = nil as Any?
     public init(player: AVPlayer, emit: @escaping Action<Event>) {
         self.emit = emit
         self.player = player
-        
         super.init()
         
-        player.addObserver(self,
-                           forKeyPath: #keyPath(AVPlayer.rate),
-                           options: [.initial, .new, .old],
-                           context: nil)
         player.addObserver(self,
                            forKeyPath: #keyPath(AVPlayer.currentItem),
                            options: [.initial, .new, .old],
@@ -56,11 +50,13 @@ public final class SystemPlayerObserver: NSObject {
         guard let change = change else { fatalError("Change should not be nil!") }
         
         func newValue<T>() -> T? {
-            return change[NSKeyValueChangeKey.newKey] as? T
+            let change = change[NSKeyValueChangeKey.newKey]
+            guard (change as? NSNull) == nil else { return nil }
+            return change as? T
         }
         
         func newValueUnwrapped<T>() -> T {
-            guard let newValue = change[NSKeyValueChangeKey.newKey] as? T else {
+            guard let newValue: T = newValue() else {
                 fatalError("Unexpected nil in \(keyPath)! value!")
             }
             return newValue
@@ -71,8 +67,6 @@ public final class SystemPlayerObserver: NSObject {
         }
         
         switch keyPath {
-        case #keyPath(AVPlayer.rate):
-            emit(.didChangeRate(from: oldValue(), to: newValueUnwrapped()))
         case #keyPath(AVPlayer.currentItem):
             
             let oldItem = oldValue() as AVPlayerItem?
@@ -87,6 +81,8 @@ public final class SystemPlayerObserver: NSObject {
                                         forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.timebase))
                 if let old = oldItem {
                     center.removeObserver(self,
                                           name: .AVPlayerItemDidPlayToEndTime,
@@ -110,17 +106,14 @@ public final class SystemPlayerObserver: NSObject {
                                      options: [.initial, .new, .old],
                                      context: nil)
                 newItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull),
-                                     options: [.initial, .new, .old],
-                                     context: nil)
-                newItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp),
-                                     options: [.initial, .new, .old],
-                                     context: nil)
-                newItem?.addObserver(self,
                                      forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges),
                                      options: [.initial, .new],
                                      context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.timebase),
+                                     options: [.initial, .new],
+                                     context: nil)
+                
                 if let new = newItem {
                     center.addObserver(
                         self,
@@ -169,13 +162,24 @@ public final class SystemPlayerObserver: NSObject {
             emit(.didChangeItemStatus(from: oldStatus, to: newStatus))
         case #keyPath(AVPlayerItem.duration):
             emit(.didChangeItemDuration(from: oldValue(), to: newValue()))
-        case #keyPath(AVPlayerItem.isPlaybackBufferFull):
-            emit(.didChangeItemPlaybackBufferFull(from: oldValue(), to: newValueUnwrapped()))
-        case #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp):
-            emit(.didChangeItemPlaybackLikelyToKeepUp(from: oldValue(),
-                                                      to: newValueUnwrapped()))
         case #keyPath(AVPlayerItem.loadedTimeRanges):
             emit(.didChangeLoadedTimeRanges(to: newValueUnwrapped()))
+        case #keyPath(AVPlayerItem.timebase):
+            if let token = timebaseRangeToken {
+                NotificationCenter.default.removeObserver(token)
+            }
+
+            guard let timebase: CMTimebase = newValue() else { return }
+
+            timebaseRangeToken = NotificationCenter.default.addObserver(
+                forName: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
+                object: timebase,
+                queue: nil) { [weak self] notification in
+                    guard let object = notification.object else { return }
+                    let timebase = object as! CMTimebase
+                    let rate = CMTimebaseGetRate(timebase)
+                    self?.emit(.didChangeRate(to: Float(rate)))
+            }
         default:
             super.observeValue(
                 forKeyPath: keyPath,
@@ -191,13 +195,9 @@ public final class SystemPlayerObserver: NSObject {
         player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.duration))
         player.currentItem?.removeObserver(self,
-                                           forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull))
-        player.currentItem?.removeObserver(self,
-                                           forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
-        player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
-        player.removeObserver(self,
-                              forKeyPath: #keyPath(AVPlayer.rate))
+        player.currentItem?.removeObserver(self,
+                                           forKeyPath: #keyPath(AVPlayerItem.timebase))
         player.removeObserver(self,
                               forKeyPath: #keyPath(AVPlayer.currentItem))
         center.removeObserver(self,
@@ -206,6 +206,12 @@ public final class SystemPlayerObserver: NSObject {
         if let token = accessLogToken {
             center.removeObserver(token,
                                   name: .AVPlayerItemNewAccessLogEntry,
+                                  object: player.currentItem)
+        }
+        
+        if let token = timebaseRangeToken {
+            center.removeObserver(token,
+                                  name: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                                   object: player.currentItem)
         }
     }

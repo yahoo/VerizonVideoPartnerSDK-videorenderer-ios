@@ -76,10 +76,6 @@ public final class SystemPlayerObserver: NSObject {
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.duration))
                 oldItem?.removeObserver(self,
-                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferFull))
-                oldItem?.removeObserver(self,
-                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
-                oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.timebase))
@@ -166,12 +162,12 @@ public final class SystemPlayerObserver: NSObject {
             emit(.didChangeLoadedTimeRanges(to: newValueUnwrapped()))
         case #keyPath(AVPlayerItem.timebase):
             if let token = timebaseRangeToken {
-                NotificationCenter.default.removeObserver(token)
+                center.removeObserver(token)
             }
 
             guard let timebase: CMTimebase = newValue() else { return }
 
-            timebaseRangeToken = NotificationCenter.default.addObserver(
+            timebaseRangeToken = center.addObserver(
                 forName: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                 object: timebase,
                 queue: nil) { [weak self] notification in

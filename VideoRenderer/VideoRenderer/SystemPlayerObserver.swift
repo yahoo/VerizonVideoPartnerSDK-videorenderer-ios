@@ -159,7 +159,8 @@ public final class SystemPlayerObserver: NSObject {
         case #keyPath(AVPlayerItem.duration):
             emit(.didChangeItemDuration(from: oldValue(), to: newValue()))
         case #keyPath(AVPlayerItem.loadedTimeRanges):
-            emit(.didChangeLoadedTimeRanges(to: newValueUnwrapped()))
+            guard let timeRanges: [CMTimeRange] = newValue() else { return }
+            emit(.didChangeLoadedTimeRanges(to: timeRanges))
         case #keyPath(AVPlayerItem.timebase):
             if let token = timebaseRangeToken {
                 center.removeObserver(token)

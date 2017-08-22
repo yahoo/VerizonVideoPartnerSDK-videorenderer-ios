@@ -167,15 +167,21 @@ public final class SystemPlayerObserver: NSObject {
             }
 
             guard let timebase: CMTimebase = newValue() else { return }
+            
+            weak var this = self
+            func emitDidChangeRate(for timebase: CMTimebase) {
+                let rate = CMTimebaseGetRate(timebase)
+                this?.emit(.didChangeRate(to: Float(rate)))
+            }
+            emitDidChangeRate(for: timebase)
 
             timebaseRangeToken = center.addObserver(
                 forName: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                 object: timebase,
-                queue: nil) { [weak self] notification in
+                queue: nil) {  notification in
                     guard let object = notification.object else { return }
                     let timebase = object as! CMTimebase
-                    let rate = CMTimebaseGetRate(timebase)
-                    self?.emit(.didChangeRate(to: Float(rate)))
+                    emitDidChangeRate(for: timebase)
             }
         default:
             super.observeValue(

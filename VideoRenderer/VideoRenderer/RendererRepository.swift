@@ -46,19 +46,30 @@ extension Renderer {
         public var volume: Float
         public var newTime: CMTime?
         public var pictureInPictureActive: Bool
+        public var audible: MediaSelection
+        public var legible: MediaSelection
+        
+        public enum MediaSelection {
+            case off
+            case on(propertyList: Any)
+        }
         
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
                     rate: Float,
                     volume: Float,
                     newTime: CMTime?,
-                    pictureInPictureActive: Bool) {
+                    pictureInPictureActive: Bool,
+                    audible: MediaSelection,
+                    legible: MediaSelection) {
             self.angles = angles
             self.content = content
             self.rate = rate
             self.volume = volume
             self.newTime = newTime
             self.pictureInPictureActive = pictureInPictureActive
+            self.audible = audible
+            self.legible = legible
         }
     }
 }
@@ -78,6 +89,13 @@ extension Renderer {
         case pictureInPictureStopped
         case pictureInPictureIsPossible(Bool)
         case averageVideoBitrateUpdated(Double)
+        case audibleSelectionGroup(MediaSelectionGroup)
+        case legibleSelectionGroup(MediaSelectionGroup)
+        
+        public struct MediaSelectionGroup {
+            public let selectedOption: AVMediaSelectionOption?
+            public let group: AVMediaSelectionGroup
+        }
     }
 }
 

@@ -137,9 +137,9 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     player?.removeTimeObserver(timeObserver)
                 }
                 timeObserver = nil
-
+                
                 currentPlayer = AVPlayer(url: props.content)
-
+                
                 observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
                     switch event {
                     case .didChangeItemStatus(_, let new):
@@ -183,24 +183,44 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                             self?.dispatch?(.pictureInPictureIsPossible(possible))
                     })
                 }
+                
+                if let item = player?.currentItem {
+                    for characteristic in item.asset.availableMediaCharacteristicsWithMediaSelectionOptions {
+                        guard let group = item.asset.mediaSelectionGroup(
+                            forMediaCharacteristic: characteristic)
+                            else { return }
+                        let selectedOption = item.selectedMediaOption(in: group)
+                        switch characteristic {
+                        case AVMediaCharacteristicAudible:
+                            dispatch?(.audibleSelectionGroup(.init(
+                                selectedOption: selectedOption,
+                                group: group)))
+                        case AVMediaCharacteristicLegible:
+                            dispatch?(.legibleSelectionGroup(.init(
+                                selectedOption: selectedOption,
+                                group: group)))
+                        default: break
+                        }
+                    }
+                }
             }
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
-//            videoView?.resizeOptions = VideoStreamView.ResizeOptions(
-//                allowVerticalBars: props.allowVerticalBars,
-//                allowHorizontalBars: props.allowHorizontalBars
-//            )
-
+            //            videoView?.resizeOptions = VideoStreamView.ResizeOptions(
+            //                allowVerticalBars: props.allowVerticalBars,
+            //                allowHorizontalBars: props.allowHorizontalBars
+            //            )
+            
             seekerController?.process(to: props.newTime)
-
+            
             if timeObserver == nil {
                 timeObserver = currentPlayer.addPeriodicTimeObserver(
                     forInterval: CMTime(seconds: 0.2, preferredTimescale: 600),
                     queue: nil,
                     using: { [weak self] time in
                         self?.dispatch?(.currentTimeUpdated(time))
-                    })
+                })
             }
             
             currentPlayer.volume = props.volume
@@ -222,16 +242,40 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     }
                 }
             #endif
+            
+            func selectOption(for player: AVPlayer,
+                              characteristic: String,
+                              mediaSelection: Renderer.Props.MediaSelection?) {
+                guard let item = currentPlayer.currentItem else { return }
+                guard let mediaSelection = mediaSelection else { return }
+                guard let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: characteristic) else { return }
+                switch mediaSelection {
+                case .on(let optionPropertyList):
+                    let mediaOption = group.mediaSelectionOption(withPropertyList: optionPropertyList)
+                    guard mediaOption != item.selectedMediaOption(in: group) else { return }
+                    
+                    item.select(mediaOption, in: group)
+                case .off:
+                    item.select(nil, in: group)
+                }
+            }
+            
+            selectOption(for: currentPlayer,
+                         characteristic: AVMediaCharacteristicAudible,
+                         mediaSelection: props.audible)
+            selectOption(for: currentPlayer,
+                         characteristic: AVMediaCharacteristicLegible,
+                         mediaSelection: props.legible)
         }
     }
 }
 
 #if os(iOS)
-@available(iOS 9.0, *)
-extension VideoStreamViewController: AVPictureInPictureControllerDelegate {
-    public func pictureInPictureControllerDidStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController) {
-        dispatch?(.pictureInPictureStopped)
+    @available(iOS 9.0, *)
+    extension VideoStreamViewController: AVPictureInPictureControllerDelegate {
+        public func pictureInPictureControllerDidStopPictureInPicture(
+            _ pictureInPictureController: AVPictureInPictureController) {
+            dispatch?(.pictureInPictureStopped)
+        }
     }
-}
 #endif

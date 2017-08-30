@@ -5,6 +5,7 @@ import AVFoundation
 
 public final class SystemPlayerObserver: NSObject {
     public enum Event {
+        case didChangeTimebaseRate(to: Float)
         case didChangeRate(to: Float)
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatus(from: AVPlayerItemStatus?, to: AVPlayerItemStatus)
@@ -28,6 +29,11 @@ public final class SystemPlayerObserver: NSObject {
         player.addObserver(self,
                            forKeyPath: #keyPath(AVPlayer.currentItem),
                            options: [.initial, .new, .old],
+                           context: nil)
+        
+        player.addObserver(self,
+                           forKeyPath: #keyPath(AVPlayer.rate),
+                           options: [.initial, .new],
                            context: nil)
     }
     
@@ -67,6 +73,9 @@ public final class SystemPlayerObserver: NSObject {
         }
         
         switch keyPath {
+        case #keyPath(AVPlayer.rate):
+            guard let newItem = newValue() as Float? else { return }
+            emit(.didChangeRate(to: newItem))
         case #keyPath(AVPlayer.currentItem):
             
             let oldItem = oldValue() as AVPlayerItem?
@@ -169,11 +178,11 @@ public final class SystemPlayerObserver: NSObject {
             guard let timebase: CMTimebase = newValue() else { return }
             
             weak var this = self
-            func emitDidChangeRate(for timebase: CMTimebase) {
+            func emitDidChangeTimebaseRate(for timebase: CMTimebase) {
                 let rate = CMTimebaseGetRate(timebase)
-                this?.emit(.didChangeRate(to: Float(rate)))
+                this?.emit(.didChangeTimebaseRate(to: Float(rate)))
             }
-            emitDidChangeRate(for: timebase)
+            emitDidChangeTimebaseRate(for: timebase)
 
             timebaseRangeToken = center.addObserver(
                 forName: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
@@ -181,7 +190,7 @@ public final class SystemPlayerObserver: NSObject {
                 queue: nil) {  notification in
                     guard let object = notification.object else { return }
                     let timebase = object as! CMTimebase
-                    emitDidChangeRate(for: timebase)
+                    emitDidChangeTimebaseRate(for: timebase)
             }
         default:
             super.observeValue(
@@ -203,6 +212,8 @@ public final class SystemPlayerObserver: NSObject {
                                            forKeyPath: #keyPath(AVPlayerItem.timebase))
         player.removeObserver(self,
                               forKeyPath: #keyPath(AVPlayer.currentItem))
+        player.removeObserver(self,
+                              forKeyPath: #keyPath(AVPlayer.rate))
         center.removeObserver(self,
                               name: .AVPlayerItemDidPlayToEndTime,
                               object: player.currentItem)

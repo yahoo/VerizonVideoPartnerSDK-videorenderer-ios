@@ -50,6 +50,7 @@ extension Renderer {
         public var legible: MediaSelection
         
         public enum MediaSelection {
+            case disabled
             case off
             case on(propertyList: Any)
         }

@@ -18,6 +18,10 @@ class VideoStreamView: UIView {
         set { playerLayer?.player = newValue }
     }
     
+    deinit {
+        player?.currentItem?.asset.cancelLoading()
+    }
+    
     private var naturalSize: CGSize? {
         guard
             let item = player?.currentItem,
@@ -103,6 +107,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     player?.removeTimeObserver(timeObserver)
                 }
                 
+                player?.currentItem?.asset.cancelLoading()
                 player?.replaceCurrentItem(with: nil)
                 player = nil
                 observer = nil
@@ -185,21 +190,29 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
                 
                 if let item = player?.currentItem {
-                    for characteristic in item.asset.availableMediaCharacteristicsWithMediaSelectionOptions {
-                        guard let group = item.asset.mediaSelectionGroup(
-                            forMediaCharacteristic: characteristic)
-                            else { return }
-                        let selectedOption = item.selectedMediaOption(in: group)
-                        switch characteristic {
-                        case AVMediaCharacteristicAudible:
-                            dispatch?(.audibleSelectionGroup(.init(
-                                selectedOption: selectedOption,
-                                group: group)))
-                        case AVMediaCharacteristicLegible:
-                            dispatch?(.legibleSelectionGroup(.init(
-                                selectedOption: selectedOption,
-                                group: group)))
-                        default: break
+                    let key = "availableMediaCharacteristicsWithMediaSelectionOptions"
+                    item.asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
+                        var error: NSError? = nil
+                        let status = item.asset.statusOfValue(forKey: key, error: &error)
+                        guard case .loaded = status else { return }
+                        for characteristic in item.asset.availableMediaCharacteristicsWithMediaSelectionOptions {
+                            guard let group = item.asset.mediaSelectionGroup(
+                                forMediaCharacteristic: characteristic)
+                                else { return }
+                            let selectedOption = item.selectedMediaOption(in: group)
+                            switch characteristic {
+                            case AVMediaCharacteristicAudible:
+                                self?.dispatch?(.audibleSelectionGroup(
+                                    .init(
+                                        selectedOption: selectedOption,
+                                        group: group)))
+                            case AVMediaCharacteristicLegible:
+                                self?.dispatch?(.legibleSelectionGroup(
+                                    .init(
+                                        selectedOption: selectedOption,
+                                        group: group)))
+                            default: break
+                            }
                         }
                     }
                 }

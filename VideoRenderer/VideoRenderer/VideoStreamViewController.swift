@@ -245,9 +245,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             
             func selectOption(for player: AVPlayer,
                               characteristic: String,
-                              mediaSelection: Renderer.Props.MediaSelection?) {
+                              mediaSelection: Renderer.Props.MediaSelection) {
                 guard let item = currentPlayer.currentItem else { return }
-                guard let mediaSelection = mediaSelection else { return }
                 guard let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: characteristic) else { return }
                 switch mediaSelection {
                 case .on(let optionPropertyList):
@@ -257,6 +256,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     item.select(mediaOption, in: group)
                 case .off:
                     item.select(nil, in: group)
+                case .disabled: break
                 }
             }
             

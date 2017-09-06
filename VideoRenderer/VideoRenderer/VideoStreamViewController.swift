@@ -263,7 +263,11 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 guard let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: characteristic) else { return }
                 switch mediaSelection {
                 case .on(let optionPropertyList):
-                    let mediaOption = group.mediaSelectionOption(withPropertyList: optionPropertyList)
+                    guard let propertyList = try? PropertyListSerialization
+                        .propertyList(from: optionPropertyList,
+                                      options: .mutableContainers,
+                                      format: nil) else { return }
+                    let mediaOption = group.mediaSelectionOption(withPropertyList: propertyList)
                     guard mediaOption != item.selectedMediaOption(in: group) else { return }
                     
                     item.select(mediaOption, in: group)

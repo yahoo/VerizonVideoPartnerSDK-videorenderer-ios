@@ -158,6 +158,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                                 return error
                             }()
                             self?.dispatch?(.playbackFailed(error))
+                        case .readyToPlay:
+                            self?.dispatch?(.playbackReady)
                         default: break
                         }
                     case .didChangeTimebaseRate(let new):

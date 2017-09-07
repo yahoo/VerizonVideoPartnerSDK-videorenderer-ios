@@ -82,6 +82,7 @@ extension Renderer {
         case playbackStarted
         case playbackStopped
         case playbackFinished
+        case playbackReady
         case playbackFailed(Error)
         
         case durationReceived(CMTime)

@@ -165,8 +165,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     case .didChangeTimebaseRate(let new):
                         if new == 0 { self?.dispatch?(.playbackStopped) }
                         else { self?.dispatch?(.playbackStarted) }
-                    case .didChangeItemDuration(_, let new):
-                        guard let new = new else { return }
+                    case .didChangeItemDuration(let new):
                         self?.dispatch?(.durationReceived(new))
                     case .didFinishPlayback:
                         self?.dispatch?(.playbackFinished)

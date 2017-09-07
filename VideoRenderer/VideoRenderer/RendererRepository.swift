@@ -52,7 +52,7 @@ extension Renderer {
         public enum MediaSelection {
             case disabled
             case off
-            case on(propertyList: Any)
+            case on(propertyList: Data)
         }
         
         public init(angles: (vertical: Float, horizontal: Float),

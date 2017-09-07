@@ -9,10 +9,10 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeRate(to: Float)
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatus(from: AVPlayerItemStatus?, to: AVPlayerItemStatus)
-        case didChangeItemDuration(from: CMTime?, to: CMTime?)
         case didFinishPlayback(withUrl: URL)
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
         case didChangeAverageVideoBitrate(to: Double)
+        case didChangeItemDuration(to: CMTime)
     }
     
     private var emit: Action<Event>
@@ -83,7 +83,7 @@ public final class SystemPlayerObserver: NSObject {
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.status))
                 oldItem?.removeObserver(self,
-                                        forKeyPath: #keyPath(AVPlayerItem.duration))
+                                        forKeyPath: #keyPath(AVPlayerItem.asset))
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
                 oldItem?.removeObserver(self,
@@ -107,7 +107,7 @@ public final class SystemPlayerObserver: NSObject {
                                      options: [.initial, .new, .old],
                                      context: nil)
                 newItem?.addObserver(self,
-                                     forKeyPath: #keyPath(AVPlayerItem.duration),
+                                     forKeyPath: #keyPath(AVPlayerItem.asset),
                                      options: [.initial, .new, .old],
                                      context: nil)
                 newItem?.addObserver(self,
@@ -165,8 +165,6 @@ public final class SystemPlayerObserver: NSObject {
             }
             
             emit(.didChangeItemStatus(from: oldStatus, to: newStatus))
-        case #keyPath(AVPlayerItem.duration):
-            emit(.didChangeItemDuration(from: oldValue(), to: newValue()))
         case #keyPath(AVPlayerItem.loadedTimeRanges):
             guard let timeRanges: [CMTimeRange] = newValue() else { return }
             emit(.didChangeLoadedTimeRanges(to: timeRanges))
@@ -192,6 +190,14 @@ public final class SystemPlayerObserver: NSObject {
                     let timebase = object as! CMTimebase
                     emitDidChangeTimebaseRate(for: timebase)
             }
+        case #keyPath(AVPlayerItem.asset):
+            guard let asset: AVAsset = newValue() else { return }
+            let key = "duration"
+            asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
+                let status = asset.statusOfValue(forKey: key, error: nil)
+                guard case .loaded = status else { return }
+                self?.emit(.didChangeItemDuration(to: asset.duration))
+            }
         default:
             super.observeValue(
                 forKeyPath: keyPath,
@@ -205,7 +211,7 @@ public final class SystemPlayerObserver: NSObject {
         player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.status))
         player.currentItem?.removeObserver(self,
-                                           forKeyPath: #keyPath(AVPlayerItem.duration))
+                                           forKeyPath: #keyPath(AVPlayerItem.asset))
         player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
         player.currentItem?.removeObserver(self,

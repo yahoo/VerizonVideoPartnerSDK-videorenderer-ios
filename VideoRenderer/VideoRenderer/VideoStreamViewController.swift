@@ -98,6 +98,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
         set { videoView?.player = newValue }
     }
     
+    private var assets: [URL : AVAsset] = [:]
+    
     public var dispatch: Renderer.Dispatch?
     
     public var props: Renderer.Props? {
@@ -127,7 +129,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         pictureInPictureController = pipController
                     }
                 }
-                
             #endif
             
             let currentPlayer: AVPlayer
@@ -143,7 +144,11 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
                 timeObserver = nil
                 
-                currentPlayer = AVPlayer(url: props.content)
+                if let asset = assets[props.content] {
+                    currentPlayer = AVPlayer(playerItem: AVPlayerItem(asset: asset))
+                } else {
+                    currentPlayer = AVPlayer(url: props.content)
+                }
                 
                 observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
                     switch event {
@@ -174,6 +179,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.bufferedTimeUpdated(end))
                     case .didChangeAverageVideoBitrate(let new):
                         self?.dispatch?(.averageVideoBitrateUpdated(new))
+                    case .didChangeAsset(let asset):
+                        self?.assets[props.content] = asset
                     default: break
                     }
                 }

@@ -13,6 +13,7 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
         case didChangeAverageVideoBitrate(to: Double)
         case didChangeItemDuration(to: CMTime)
+        case didChangeAsset(AVAsset)
     }
     
     private var emit: Action<Event>
@@ -73,9 +74,11 @@ public final class SystemPlayerObserver: NSObject {
         }
         
         switch keyPath {
+            
         case #keyPath(AVPlayer.rate):
             guard let newItem = newValue() as Float? else { return }
             emit(.didChangeRate(to: newItem))
+            
         case #keyPath(AVPlayer.currentItem):
             
             let oldItem = oldValue() as AVPlayerItem?
@@ -158,6 +161,7 @@ public final class SystemPlayerObserver: NSObject {
             }()
             
             emit(.didChangeUrl(from: oldUrl, to: newUrl))
+            
         case #keyPath(AVPlayerItem.status):
             let oldStatus = oldValue().flatMap(AVPlayerItemStatus.init)
             guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else {
@@ -165,9 +169,11 @@ public final class SystemPlayerObserver: NSObject {
             }
             
             emit(.didChangeItemStatus(from: oldStatus, to: newStatus))
+            
         case #keyPath(AVPlayerItem.loadedTimeRanges):
             guard let timeRanges: [CMTimeRange] = newValue() else { return }
             emit(.didChangeLoadedTimeRanges(to: timeRanges))
+            
         case #keyPath(AVPlayerItem.timebase):
             if let token = timebaseRangeToken {
                 center.removeObserver(token)
@@ -190,14 +196,18 @@ public final class SystemPlayerObserver: NSObject {
                     let timebase = object as! CMTimebase
                     emitDidChangeTimebaseRate(for: timebase)
             }
+            
         case #keyPath(AVPlayerItem.asset):
             guard let asset: AVAsset = newValue() else { return }
+            emit(.didChangeAsset(asset))
+            
             let key = "duration"
             asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
                 let status = asset.statusOfValue(forKey: key, error: nil)
                 guard case .loaded = status else { return }
                 self?.emit(.didChangeItemDuration(to: asset.duration))
             }
+            
         default:
             super.observeValue(
                 forKeyPath: keyPath,

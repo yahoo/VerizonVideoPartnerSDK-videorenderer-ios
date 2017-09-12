@@ -200,18 +200,19 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                             guard let group = item.asset.mediaSelectionGroup(
                                 forMediaCharacteristic: characteristic)
                                 else { return }
+                            let options = group.options.filter(AVMediaSelectionOption.hasLanguageTag)
                             let selectedOption = item.selectedMediaOption(in: group)
                             switch characteristic {
                             case AVMediaCharacteristicAudible:
                                 self?.dispatch?(.audibleSelectionGroup(
                                     .init(
                                         selectedOption: selectedOption,
-                                        group: group)))
+                                        options: options)))
                             case AVMediaCharacteristicLegible:
                                 self?.dispatch?(.legibleSelectionGroup(
                                     .init(
                                         selectedOption: selectedOption,
-                                        group: group)))
+                                        options: options)))
                             default: break
                             }
                         }
@@ -297,3 +298,12 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
         }
     }
 #endif
+
+
+extension AVMediaSelectionOption {
+    static func hasLanguageTag(option: AVMediaSelectionOption) -> Bool {
+        guard let tag = option.extendedLanguageTag else { return false }
+        guard tag != "und" else { return false }
+        return true
+    }
+}

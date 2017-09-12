@@ -96,7 +96,7 @@ extension Renderer {
         
         public struct MediaSelectionGroup {
             public let selectedOption: AVMediaSelectionOption?
-            public let group: AVMediaSelectionGroup
+            public let options: [AVMediaSelectionOption]
         }
     }
 }

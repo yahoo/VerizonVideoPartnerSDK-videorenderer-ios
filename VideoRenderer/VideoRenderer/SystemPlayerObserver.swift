@@ -202,10 +202,17 @@ public final class SystemPlayerObserver: NSObject {
             emit(.didChangeAsset(asset))
             
             let key = "duration"
-            asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
-                let status = asset.statusOfValue(forKey: key, error: nil)
-                guard case .loaded = status else { return }
-                self?.emit(.didChangeItemDuration(to: asset.duration))
+            let status = asset.statusOfValue(forKey: key, error: nil)
+            switch status {
+            case .unknown:
+                asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
+                    let status = asset.statusOfValue(forKey: key, error: nil)
+                    guard case .loaded = status else { return }
+                    self?.emit(.didChangeItemDuration(to: asset.duration))
+                }
+            case .loaded:
+                emit(.didChangeItemDuration(to: asset.duration))
+            default: break
             }
             
         default:

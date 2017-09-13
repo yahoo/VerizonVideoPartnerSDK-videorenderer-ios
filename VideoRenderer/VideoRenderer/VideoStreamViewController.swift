@@ -109,7 +109,15 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     player?.removeTimeObserver(timeObserver)
                 }
                 
-                player?.currentItem?.asset.cancelLoading()
+                if let asset = player?.currentItem?.asset {
+                    let durationStatus = asset.statusOfValue(forKey: "duration", error: nil)
+                    let mediaOptionsStatus = asset.statusOfValue(forKey: "availableMediaCharacteristicsWithMediaSelectionOptions", error: nil)
+                    switch (durationStatus, mediaOptionsStatus) {
+                    case (.loading, .loading):
+                        asset.cancelLoading()
+                    default: break
+                    }
+                }
                 player?.replaceCurrentItem(with: nil)
                 player = nil
                 observer = nil

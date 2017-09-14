@@ -215,7 +215,10 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                             guard let group = item.asset.mediaSelectionGroup(
                                 forMediaCharacteristic: characteristic)
                                 else { return }
-                            let options = group.options.filter(AVMediaSelectionOption.hasLanguageTag)
+                            let options: [AVMediaSelectionOption] = {
+                                guard characteristic == AVMediaCharacteristicLegible else { return group.options }
+                                return group.options.filter(AVMediaSelectionOption.hasLanguageTag)
+                            }()
                             let selectedOption = item.selectedMediaOption(in: group)
                             switch characteristic {
                             case AVMediaCharacteristicAudible:

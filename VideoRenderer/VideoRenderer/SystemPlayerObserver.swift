@@ -83,6 +83,8 @@ public final class SystemPlayerObserver: NSObject {
             
             let oldItem = oldValue() as AVPlayerItem?
             /* Process old item */ do {
+                oldItem?.asset.removeObserver(self,
+                                              forKeyPath: #keyPath(AVAsset.duration))
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.status))
                 oldItem?.removeObserver(self,
@@ -228,6 +230,7 @@ public final class SystemPlayerObserver: NSObject {
     }
     
     deinit {
+        player.currentItem?.asset.removeObserver(self, forKeyPath: #keyPath(AVAsset.duration))
         player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.status))
         player.currentItem?.removeObserver(self,
@@ -254,6 +257,5 @@ public final class SystemPlayerObserver: NSObject {
                                   name: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                                   object: player.currentItem)
         }
-        player.currentItem?.asset.removeObserver(self, forKeyPath: #keyPath(AVAsset.duration))
     }
 }

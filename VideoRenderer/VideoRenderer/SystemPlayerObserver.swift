@@ -123,6 +123,10 @@ public final class SystemPlayerObserver: NSObject {
                                      context: nil)
                 
                 if let new = newItem {
+                    if case .unknown = new.asset.statusOfValue(forKey: "duration", error: nil) {
+                        new.asset.loadValuesAsynchronously(forKeys: ["duration"], completionHandler: nil)
+                    }
+                    
                     center.addObserver(
                         self,
                         selector: #selector(SystemPlayerObserver.didPlayToEnd),
@@ -178,7 +182,7 @@ public final class SystemPlayerObserver: NSObject {
             if let token = timebaseRangeToken {
                 center.removeObserver(token)
             }
-
+            
             guard let timebase: CMTimebase = newValue() else { return }
             
             weak var this = self
@@ -187,7 +191,7 @@ public final class SystemPlayerObserver: NSObject {
                 this?.emit(.didChangeTimebaseRate(to: Float(rate)))
             }
             emitDidChangeTimebaseRate(for: timebase)
-
+            
             timebaseRangeToken = center.addObserver(
                 forName: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                 object: timebase,
@@ -198,22 +202,21 @@ public final class SystemPlayerObserver: NSObject {
             }
             
         case #keyPath(AVPlayerItem.asset):
-            guard let asset: AVAsset = newValue() else { return }
-            emit(.didChangeAsset(asset))
+            guard let new: AVAsset = newValue() else { return }
+            emit(.didChangeAsset(new))
             
-            let key = "duration"
-            let status = asset.statusOfValue(forKey: key, error: nil)
-            switch status {
-            case .unknown:
-                asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
-                    let status = asset.statusOfValue(forKey: key, error: nil)
-                    guard case .loaded = status else { return }
-                    self?.emit(.didChangeItemDuration(to: asset.duration))
-                }
-            case .loaded:
-                emit(.didChangeItemDuration(to: asset.duration))
-            default: break
-            }
+            let old: AVAsset? = oldValue()
+            old?.removeObserver(self, forKeyPath: #keyPath(AVAsset.duration))
+            new.addObserver(self,
+                            forKeyPath: #keyPath(AVAsset.duration),
+                            options: [.initial, .new],
+                            context: nil)
+            
+        case #keyPath(AVAsset.duration):
+            guard let object = object as? AVAsset else { return }
+            guard case .loaded = object.statusOfValue(forKey: "duration", error: nil) else { return }
+            guard let duration: CMTime = newValue() else { return }
+            emit(.didChangeItemDuration(to: duration))
             
         default:
             super.observeValue(
@@ -251,5 +254,6 @@ public final class SystemPlayerObserver: NSObject {
                                   name: kCMTimebaseNotification_EffectiveRateChanged as NSNotification.Name,
                                   object: player.currentItem)
         }
+        player.currentItem?.asset.removeObserver(self, forKeyPath: #keyPath(AVAsset.duration))
     }
 }

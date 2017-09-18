@@ -125,10 +125,6 @@ public final class SystemPlayerObserver: NSObject {
                                      context: nil)
                 
                 if let new = newItem {
-                    if case .unknown = new.asset.statusOfValue(forKey: "duration", error: nil) {
-                        new.asset.loadValuesAsynchronously(forKeys: ["duration"], completionHandler: nil)
-                    }
-                    
                     center.addObserver(
                         self,
                         selector: #selector(SystemPlayerObserver.didPlayToEnd),
@@ -209,14 +205,23 @@ public final class SystemPlayerObserver: NSObject {
             
             let old: AVAsset? = oldValue()
             old?.removeObserver(self, forKeyPath: #keyPath(AVAsset.duration))
+
             new.addObserver(self,
                             forKeyPath: #keyPath(AVAsset.duration),
                             options: [.initial, .new],
                             context: nil)
             
+            if case .unknown = new.statusOfValue(forKey: #keyPath(AVAsset.duration),
+                                                 error: nil) {
+                new.loadValuesAsynchronously(
+                    forKeys: [#keyPath(AVAsset.duration)],
+                    completionHandler: nil)
+            }
+            
         case #keyPath(AVAsset.duration):
             guard let object = object as? AVAsset else { return }
-            guard case .loaded = object.statusOfValue(forKey: "duration", error: nil) else { return }
+            guard case .loaded = object.statusOfValue(forKey:
+                #keyPath(AVAsset.duration), error: nil) else { return }
             guard let duration: CMTime = newValue() else { return }
             emit(.didChangeItemDuration(to: duration))
             

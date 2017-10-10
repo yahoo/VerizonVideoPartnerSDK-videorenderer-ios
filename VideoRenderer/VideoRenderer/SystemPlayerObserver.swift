@@ -203,10 +203,11 @@ public final class SystemPlayerObserver: NSObject {
             
             new.loadValuesAsynchronously(forKeys: [#keyPath(AVAsset.duration)],
                                          completionHandler: { [weak self] in
-                    guard case .loaded = new.statusOfValue(forKey: #keyPath(AVAsset.duration),
-                                                           error: nil) else { return }
-                    self?.emit(.didChangeItemDuration(to: new.duration))
+                                            guard case .loaded = new.statusOfValue(forKey: #keyPath(AVAsset.duration),
+                                                                                   error: nil) else { return }
+                                            self?.emit(.didChangeItemDuration(to: new.duration))
             })
+            
         default:
             super.observeValue(
                 forKeyPath: keyPath,

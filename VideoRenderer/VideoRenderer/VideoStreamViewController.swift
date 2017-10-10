@@ -245,13 +245,14 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             //                allowHorizontalBars: props.allowHorizontalBars
             //            )
             
-            seekerController?.process(to: props.newTime)
+            seekerController?.process(to: props.currentTime)
             
             if timeObserver == nil {
                 timeObserver = currentPlayer.addPeriodicTimeObserver(
                     forInterval: CMTime(seconds: 0.2, preferredTimescale: 600),
                     queue: nil,
                     using: { [weak self] time in
+                        self?.seekerController?.currentTime = time
                         self?.dispatch?(.currentTimeUpdated(time))
                 })
             }

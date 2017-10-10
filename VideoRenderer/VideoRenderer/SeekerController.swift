@@ -11,12 +11,15 @@ public final class SeekerController {
         self.player = player
     }
     
+    var currentTime: CMTime?
     private var newTime: CMTime?
     private var activeSeekingTime: CMTime?
     
     public func process(to newTime: CMTime?) {
         guard self.newTime != newTime else { return }
+        guard self.currentTime != newTime else { return }
         self.newTime = newTime
+        self.currentTime = newTime
         
         guard let time = newTime else { return }
         guard activeSeekingTime == nil else { return }

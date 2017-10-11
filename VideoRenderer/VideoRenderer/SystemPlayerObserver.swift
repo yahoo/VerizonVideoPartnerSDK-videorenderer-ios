@@ -201,6 +201,11 @@ public final class SystemPlayerObserver: NSObject {
             guard let new: AVAsset = newValue() else { return }
             emit(.didChangeAsset(new))
             
+            guard new.duration == kCMTimeIndefinite else {
+                self.emit(.didChangeItemDuration(to: new.duration))
+                return
+            }
+            
             new.loadValuesAsynchronously(forKeys: [#keyPath(AVAsset.duration)],
                                          completionHandler: { [weak self] in
                                             guard case .loaded = new.statusOfValue(forKey: #keyPath(AVAsset.duration),

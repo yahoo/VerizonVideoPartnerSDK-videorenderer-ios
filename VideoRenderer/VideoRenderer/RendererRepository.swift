@@ -46,6 +46,7 @@ extension Renderer {
         public var volume: Float
         public var currentTime: CMTime?
         public var pictureInPictureActive: Bool
+        public var allowsExternalPlayback: Bool
         public var audible: MediaSelection
         public var legible: MediaSelection
         
@@ -61,6 +62,7 @@ extension Renderer {
                     volume: Float,
                     currentTime: CMTime?,
                     pictureInPictureActive: Bool,
+                    allowsExternalPlayback: Bool,
                     audible: MediaSelection,
                     legible: MediaSelection) {
             self.angles = angles
@@ -69,6 +71,7 @@ extension Renderer {
             self.volume = volume
             self.currentTime = currentTime
             self.pictureInPictureActive = pictureInPictureActive
+            self.allowsExternalPlayback = allowsExternalPlayback
             self.audible = audible
             self.legible = legible
         }
@@ -90,6 +93,8 @@ extension Renderer {
         case bufferedTimeUpdated(CMTime)
         case pictureInPictureStopped
         case pictureInPictureIsPossible(Bool)
+        case externalPlaybackAllowance(Bool)
+        case externalPlaybackPossible(Bool)
         case averageVideoBitrateUpdated(Double)
         case audibleSelectionGroup(MediaSelectionGroup)
         case legibleSelectionGroup(MediaSelectionGroup)

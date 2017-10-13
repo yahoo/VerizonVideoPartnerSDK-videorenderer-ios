@@ -165,8 +165,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     case .didChangeItemStatusToFailed(let error):
                         let error: Error = {
                             guard let error = error else {
-                                struct UnknownError: Error { let props: Renderer.Props }
-                                return UnknownError(props: props)
+                                struct SystemPlayerFailed: Swift.Error { }
+                                return SystemPlayerFailed() as NSError
                             }
                             return error
                         }()

@@ -185,6 +185,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.averageVideoBitrateUpdated(new))
                     case .didChangeAsset(let asset):
                         self?.assets[props.content] = asset
+                    case .playerErrored(let error):
+                        self?.dispatch?(.playbackFailed(error))
                     default: break
                     }
                 }

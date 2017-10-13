@@ -122,6 +122,8 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                     case .didChangeLoadedTimeRanges(let new):
                         guard let end = new.last?.end else { return }
                         self?.dispatch?(.bufferedTimeUpdated(end))
+                    case .playerErrored(let error):
+                        self?.dispatch?(.playbackFailed(error))
                     default: break
                     }
                 }

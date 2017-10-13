@@ -104,13 +104,6 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
                     switch event {
                     case .didChangeItemStatusToFailed(let error):
-                        let error: Error = {
-                            guard let error = error else {
-                                struct SystemPlayerFailed: Swift.Error { }
-                                return SystemPlayerFailed() as NSError
-                            }
-                            return error
-                        }()
                         self?.dispatch?(.playbackFailed(error))
                     case .didChangeTimebaseRate(let new):
                         if new == 0 { self?.dispatch?(.playbackStopped) }
@@ -122,7 +115,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                     case .didChangeLoadedTimeRanges(let new):
                         guard let end = new.last?.end else { return }
                         self?.dispatch?(.bufferedTimeUpdated(end))
-                    case .playerErrored(let error):
+                    case .didReceivedPlayerError(let error):
                         self?.dispatch?(.playbackFailed(error))
                     default: break
                     }

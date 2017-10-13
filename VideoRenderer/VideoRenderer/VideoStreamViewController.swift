@@ -163,13 +163,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     case .didChangeItemStatusToReadyToPlay:
                         self?.dispatch?(.playbackReady)
                     case .didChangeItemStatusToFailed(let error):
-                        let error: Error = {
-                            guard let error = error else {
-                                struct SystemPlayerFailed: Swift.Error { }
-                                return SystemPlayerFailed() as NSError
-                            }
-                            return error
-                        }()
                         self?.dispatch?(.playbackFailed(error))
                     case .didChangeTimebaseRate(let new):
                         if new == 0 { self?.dispatch?(.playbackStopped) }
@@ -185,7 +178,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.averageVideoBitrateUpdated(new))
                     case .didChangeAsset(let asset):
                         self?.assets[props.content] = asset
-                    case .playerErrored(let error):
+                    case .didReceivedPlayerError(let error):
                         self?.dispatch?(.playbackFailed(error))
                     default: break
                     }

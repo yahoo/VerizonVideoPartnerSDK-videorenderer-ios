@@ -10,13 +10,13 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatusToUnknown()
         case didChangeItemStatusToReadyToPlay()
-        case didChangeItemStatusToFailed(error: Error?)
+        case didChangeItemStatusToFailed(error: Error)
         case didFinishPlayback(withUrl: URL)
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
         case didChangeAverageVideoBitrate(to: Double)
         case didChangeItemDuration(to: CMTime)
         case didChangeAsset(AVAsset)
-        case playerErrored(error: Error)
+        case didReceivedPlayerError(error: Error)
     }
     
     private var emit: Action<Event>
@@ -172,14 +172,17 @@ public final class SystemPlayerObserver: NSObject {
         
         case #keyPath(AVPlayer.error):
             guard let error: Error = newValue() else { return }
-            emit(.playerErrored(error: error))
+            emit(.didReceivedPlayerError(error: error))
             
         case #keyPath(AVPlayerItem.status):
             guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }
             switch newStatus {
             case .unknown: emit(.didChangeItemStatusToUnknown())
             case .readyToPlay: emit(.didChangeItemStatusToReadyToPlay())
-            case .failed: emit(.didChangeItemStatusToFailed(error: player.currentItem?.error))
+            case .failed:
+                struct SystemPlayerFailed: Swift.Error { }
+                let error = player.currentItem?.error ?? SystemPlayerFailed()
+                emit(.didChangeItemStatusToFailed(error: error))
             }
 
         case #keyPath(AVPlayerItem.loadedTimeRanges):

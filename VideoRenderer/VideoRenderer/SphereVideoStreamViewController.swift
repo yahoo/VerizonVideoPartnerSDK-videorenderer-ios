@@ -151,7 +151,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
-            seekerController?.process(to: props.newTime)
+            seekerController?.process(to: props.currentTime)
             
             if timeObserver == nil {
                 timeObserver = currentPlayer.addPeriodicTimeObserver(

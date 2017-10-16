@@ -44,7 +44,7 @@ extension Renderer {
         public var content: URL
         public var rate: Float
         public var volume: Float
-        public var newTime: CMTime?
+        public var currentTime: CMTime?
         public var pictureInPictureActive: Bool
         public var audible: MediaSelection
         public var legible: MediaSelection
@@ -59,7 +59,7 @@ extension Renderer {
                     content: URL,
                     rate: Float,
                     volume: Float,
-                    newTime: CMTime?,
+                    currentTime: CMTime?,
                     pictureInPictureActive: Bool,
                     audible: MediaSelection,
                     legible: MediaSelection) {
@@ -67,7 +67,7 @@ extension Renderer {
             self.content = content
             self.rate = rate
             self.volume = volume
-            self.newTime = newTime
+            self.currentTime = currentTime
             self.pictureInPictureActive = pictureInPictureActive
             self.audible = audible
             self.legible = legible

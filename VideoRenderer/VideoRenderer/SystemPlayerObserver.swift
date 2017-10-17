@@ -8,12 +8,15 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeTimebaseRate(to: Float)
         case didChangeRate(to: Float)
         case didChangeUrl(from: URL?, to: URL?)
-        case didChangeItemStatus(from: AVPlayerItemStatus?, to: AVPlayerItemStatus)
+        case didChangeItemStatusToUnknown()
+        case didChangeItemStatusToReadyToPlay()
+        case didChangeItemStatusToFailed(error: Error)
         case didFinishPlayback(withUrl: URL)
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
         case didChangeAverageVideoBitrate(to: Double)
         case didChangeItemDuration(to: CMTime)
         case didChangeAsset(AVAsset)
+        case didReceivePlayerError(Error)
     }
     
     private var emit: Action<Event>
@@ -34,6 +37,11 @@ public final class SystemPlayerObserver: NSObject {
         
         player.addObserver(self,
                            forKeyPath: #keyPath(AVPlayer.rate),
+                           options: [.initial, .new],
+                           context: nil)
+        
+        player.addObserver(self,
+                           forKeyPath: #keyPath(AVPlayer.error),
                            options: [.initial, .new],
                            context: nil)
     }
@@ -78,7 +86,7 @@ public final class SystemPlayerObserver: NSObject {
         case #keyPath(AVPlayer.rate):
             guard let newItem = newValue() as Float? else { return }
             emit(.didChangeRate(to: newItem))
-            
+        
         case #keyPath(AVPlayer.currentItem):
             
             let oldItem = oldValue() as AVPlayerItem?
@@ -161,15 +169,22 @@ public final class SystemPlayerObserver: NSObject {
             }()
             
             emit(.didChangeUrl(from: oldUrl, to: newUrl))
+        
+        case #keyPath(AVPlayer.error):
+            guard let error: Error = newValue() else { return }
+            emit(.didReceivePlayerError(error))
             
         case #keyPath(AVPlayerItem.status):
-            let oldStatus = oldValue().flatMap(AVPlayerItemStatus.init)
-            guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else {
-                fatalError("Unexpected nil in AVPlayerItem.status value!")
+            guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }
+            switch newStatus {
+            case .unknown: emit(.didChangeItemStatusToUnknown())
+            case .readyToPlay: emit(.didChangeItemStatusToReadyToPlay())
+            case .failed:
+                struct SystemPlayerFailed: Swift.Error { }
+                let error = player.currentItem?.error ?? SystemPlayerFailed()
+                emit(.didChangeItemStatusToFailed(error: error))
             }
-            
-            emit(.didChangeItemStatus(from: oldStatus, to: newStatus))
-            
+
         case #keyPath(AVPlayerItem.loadedTimeRanges):
             guard let timeRanges: [CMTimeRange] = newValue() else { return }
             emit(.didChangeLoadedTimeRanges(to: timeRanges))
@@ -235,6 +250,8 @@ public final class SystemPlayerObserver: NSObject {
                               forKeyPath: #keyPath(AVPlayer.currentItem))
         player.removeObserver(self,
                               forKeyPath: #keyPath(AVPlayer.rate))
+        player.removeObserver(self,
+                              forKeyPath: #keyPath(AVPlayer.error))
         center.removeObserver(self,
                               name: .AVPlayerItemDidPlayToEndTime,
                               object: player.currentItem)

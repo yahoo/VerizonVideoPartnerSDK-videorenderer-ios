@@ -160,21 +160,10 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 
                 observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
                     switch event {
-                    case .didChangeItemStatus(_, let new):
-                        switch new {
-                        case .failed:
-                            let error: Error = {
-                                guard let error = currentPlayer.currentItem?.error else {
-                                    struct UnknownError: Error { let props: Renderer.Props }
-                                    return UnknownError(props: props)
-                                }
-                                return error
-                            }()
-                            self?.dispatch?(.playbackFailed(error))
-                        case .readyToPlay:
-                            self?.dispatch?(.playbackReady)
-                        default: break
-                        }
+                    case .didChangeItemStatusToReadyToPlay:
+                        self?.dispatch?(.playbackReady)
+                    case .didChangeItemStatusToFailed(let error):
+                        self?.dispatch?(.playbackFailed(error))
                     case .didChangeTimebaseRate(let new):
                         if new == 0 { self?.dispatch?(.playbackStopped) }
                         else { self?.dispatch?(.playbackStarted) }
@@ -189,6 +178,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.averageVideoBitrateUpdated(new))
                     case .didChangeAsset(let asset):
                         self?.assets[props.content] = asset
+                    case .didReceivePlayerError(let error):
+                        self?.dispatch?(.playbackFailed(error))
                     default: break
                     }
                 }

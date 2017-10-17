@@ -16,7 +16,7 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeAverageVideoBitrate(to: Double)
         case didChangeItemDuration(to: CMTime)
         case didChangeAsset(AVAsset)
-        case didReceivedPlayerError(error: Error)
+        case didReceivePlayerError(Error)
     }
     
     private var emit: Action<Event>
@@ -172,7 +172,7 @@ public final class SystemPlayerObserver: NSObject {
         
         case #keyPath(AVPlayer.error):
             guard let error: Error = newValue() else { return }
-            emit(.didReceivedPlayerError(error: error))
+            emit(.didReceivePlayerError(error))
             
         case #keyPath(AVPlayerItem.status):
             guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }

@@ -103,6 +103,8 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 
                 observer = SystemPlayerObserver(player: currentPlayer) { [weak self] event in
                     switch event {
+                    case .didChangeItemStatusToReadyToPlay:
+                        self?.dispatch?(.playbackReady)
                     case .didChangeItemStatusToFailed(let error):
                         self?.dispatch?(.playbackFailed(error))
                     case .didChangeTimebaseRate(let new):
@@ -149,6 +151,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                     forInterval: CMTime(seconds: 0.2, preferredTimescale: 600),
                     queue: nil,
                     using: { [weak self] time in
+                        self?.seekerController?.currentTime = time
                         self?.dispatch?(.currentTimeUpdated(time))
                 })
             }

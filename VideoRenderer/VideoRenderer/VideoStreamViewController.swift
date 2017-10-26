@@ -164,6 +164,10 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.playbackReady)
                     case .didChangeItemStatusToFailed(let error):
                         self?.dispatch?(.playbackFailed(error))
+                    case .didChangeExternalPlaybackStatus(let status):
+                        self?.dispatch?(.externalPlaybackPossible(status))
+                    case .didChangeExternalPlaybackAllowance(let status):
+                        self?.dispatch?(.externalPlaybackAllowance(status))
                     case .didChangeTimebaseRate(let new):
                         if new == 0 { self?.dispatch?(.playbackStopped) }
                         else { self?.dispatch?(.playbackStarted) }
@@ -228,6 +232,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     }
                 }
             }
+            
+            currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             

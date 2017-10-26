@@ -7,6 +7,8 @@ public final class SystemPlayerObserver: NSObject {
     public enum Event {
         case didChangeTimebaseRate(to: Float)
         case didChangeRate(to: Float)
+        case didChangeExternalPlaybackStatus(to: Bool)
+        case didChangeExternalPlaybackAllowance(to: Bool)
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatusToUnknown()
         case didChangeItemStatusToReadyToPlay()
@@ -42,6 +44,16 @@ public final class SystemPlayerObserver: NSObject {
         
         player.addObserver(self,
                            forKeyPath: #keyPath(AVPlayer.error),
+                           options: [.initial, .new],
+                           context: nil)
+        
+        player.addObserver(self,
+                           forKeyPath: #keyPath(AVPlayer.isExternalPlaybackActive),
+                           options: [.initial, .new],
+                           context: nil)
+        
+        player.addObserver(self,
+                           forKeyPath: #keyPath(AVPlayer.allowsExternalPlayback),
                            options: [.initial, .new],
                            context: nil)
     }
@@ -86,7 +98,15 @@ public final class SystemPlayerObserver: NSObject {
         case #keyPath(AVPlayer.rate):
             guard let newItem = newValue() as Float? else { return }
             emit(.didChangeRate(to: newItem))
-        
+            
+        case #keyPath(AVPlayer.isExternalPlaybackActive):
+            guard let newItem = newValue() as Bool? else { return }
+            emit(.didChangeExternalPlaybackStatus(to: newItem))
+            
+        case #keyPath(AVPlayer.allowsExternalPlayback):
+            guard let newItem = newValue() as Bool? else { return }
+            emit(.didChangeExternalPlaybackAllowance(to: newItem))
+            
         case #keyPath(AVPlayer.currentItem):
             
             let oldItem = oldValue() as AVPlayerItem?
@@ -252,6 +272,11 @@ public final class SystemPlayerObserver: NSObject {
                               forKeyPath: #keyPath(AVPlayer.rate))
         player.removeObserver(self,
                               forKeyPath: #keyPath(AVPlayer.error))
+        player.removeObserver(self,
+                              forKeyPath: #keyPath(AVPlayer.isExternalPlaybackActive))
+        player.removeObserver(self,
+                              forKeyPath: #keyPath(AVPlayer.allowsExternalPlayback),
+                              context: nil)
         center.removeObserver(self,
                               name: .AVPlayerItemDidPlayToEndTime,
                               object: player.currentItem)

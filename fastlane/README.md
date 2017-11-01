@@ -29,16 +29,11 @@ xcode-select --install
 </table>
 
 # Available Actions
-### is_branch_up_to_date
+### release_videorenderer_description
 ```
-fastlane is_branch_up_to_date
+fastlane release_videorenderer_description
 ```
-Checking if current branch is up to date.
-### archive
-```
-fastlane archive
-```
-Archives sdk using 'carthage'.
+Generate VideoRenderer release description
 ### release_videorenderer
 ```
 fastlane release_videorenderer

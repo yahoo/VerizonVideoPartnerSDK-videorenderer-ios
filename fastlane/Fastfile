@@ -12,47 +12,23 @@ lane :release_videorenderer_description do
 	begin
 		description = github_changelog_generator(output: "unreleased.md", unreleased_only: true)
 		UI.message description
-		description
-	rescue => exception
-		UI.user_error! exception.message
 	end
-end
-
-desc "Check if VideoRenderer version exist"
-lane :is_release_exist do |options|
-	draft_release = github_releases_api(
-		repo_name: options[:repo_name],
-		action: "get_github_releases", 
-		tag: options[:version])
-	UI.message("#{draft_release}")
-	draft_release != nil	
+	description
 end
 
 # Usage like these expected 'fastlane release_videorenderer next_version:1.18 swift_version:3.2'
 desc "Release VideoRenderer version"
 lane :release_videorenderer do |options|
-	next if !utils(action: "is_branch_up_to_date")
+	next if !utils(action: "is_branch_up_to_date", git_branch: git_branch)
 	version = options[:next_version]
 	UI.user_error!("Expecting `next_version`!") unless version != nil
 
 	repo_name = "aol-public/OneMobileSDK-videorenderer-ios"
 
-	UI.user_error!("Release on tag #{version} already exists!") unless !is_release_exist(repo_name: repo_name, version: version)
+	UI.user_error!("Release on tag #{version} already exists!") unless !github_releases_api(action: "is_release_exist", repo_name: repo_name, version: version)
 
 	swift_version = options[:swift_version]
 	UI.user_error! "Expecting `swift_version`!" unless swift_version != nil
-
-	travis_branch = options[:branch]
-	is_pull_request = options[:is_pull_request]
-
-	is_travis = travis_branch != nil && is_pull_request != nil
-	if is_travis == true
-		UI.message "Branch #{travis_branch}"
-		UI.message "Is pull request: #{is_pull_request}"
-
-		next UI.message "Branch is not 'master'" if travis_branch != 'master'
-		next UI.message "It is pull request - skipping prerelease." if is_pull_request 				
-	end
 
 	next if !utils(action: "is_branch_up_to_date")
 

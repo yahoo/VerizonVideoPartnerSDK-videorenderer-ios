@@ -1,0 +1,81 @@
+actions_path "actions/common/"
+actions_path "actions/common/cocoapods/"
+actions_path "actions/common/github/"
+actions_path "actions/common/sourcery/"
+actions_path "actions/common/json/"
+actions_path "actions/common/utils/"
+
+
+desc "Generate VideoRenderer release description"
+lane :release_videorenderer_description do |options|
+	description = "Template description"
+	begin
+		description = github_changelog_generator(output: "unreleased.md", unreleased_only: true, token: options[:token])
+		UI.message description
+	end
+	description
+end
+
+# Usage like these expected 'fastlane release_videorenderer next_version:1.18 swift_version:3.2 token: 123'
+desc "Release VideoRenderer version"
+lane :release_videorenderer do |options|
+	next if !is_branch_up_to_date(git_branch: git_branch)
+
+	version = options[:next_version]
+	UI.user_error!("Expecting `next_version`!") unless version != nil
+
+	token = options[:token]
+	UI.user_error!("Expecting `token`!") unless token != nil
+
+	repo_name = "aol-public/OneMobileSDK-videorenderer-ios"
+
+	is_release_exist = github_releases_api(action: "is_release_exist", repo_name: repo_name, version: version, token: token)
+	UI.user_error!("Release on tag #{version} already exists!") unless is_release_exist
+
+	swift_version = options[:swift_version]
+	UI.user_error! "Expecting `swift_version`!" unless swift_version != nil
+
+	next if !is_branch_up_to_date(git_branch: git_branch)
+
+	UI.message "Starting prerelease of VideoRenderer..."
+
+	framework_name = "VideoRenderer"
+	archive_name = "#{framework_name}.framework.zip"
+
+	carthage(
+		command: "archive",
+		project_directory: "VideoRenderer/",
+		frameworks: framework_name,
+		output: archive_name)
+
+
+	UI.important("Setup new #{version} release!")
+	release = set_github_release(
+		repository_name: repo_name,
+		name: "Version #{version}",
+		tag_name: version,
+		description: release_videorenderer_description(token: token),
+		is_draft: false,
+		is_prerelease: false,
+		api_token: token,
+		upload_assets: [archive_name])
+
+	release['assets'].each do |asset|
+		next unless asset['name'] == archive_name
+		podspec_name = "VideoRenderer.podspec"
+		update_podspec(
+			framewokr_link_url: asset['browser_download_url'],
+			podspec_path: podspec_name,
+			version: version)
+		deploy_podspec(
+			podspec_path: podspec_name, 
+			spec_repo_name: "onemobile-sdk-podspecs",
+			spec_repo_url: "git@github.com:vidible/OneMobileSDK-releases.git",
+			sources_repo: "https://github.com/vidible/OneMobileSDK-releases.git",
+			swift_version: swift_version)
+	end
+
+	reset_git_repo(
+			force: true,
+			files: [podspec_name])
+end

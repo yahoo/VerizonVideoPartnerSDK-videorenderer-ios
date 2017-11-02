@@ -19,7 +19,7 @@ end
 # Usage like these expected 'fastlane release_videorenderer next_version:1.18 swift_version:3.2 token: 123'
 desc "Release VideoRenderer version"
 lane :release_videorenderer do |options|
-	next if !utils(action: "is_branch_up_to_date", git_branch: git_branch)
+	next if !is_branch_up_to_date(git_branch: git_branch)
 
 	version = options[:next_version]
 	UI.user_error!("Expecting `next_version`!") unless version != nil
@@ -35,7 +35,7 @@ lane :release_videorenderer do |options|
 	swift_version = options[:swift_version]
 	UI.user_error! "Expecting `swift_version`!" unless swift_version != nil
 
-	next if !utils(action: "is_branch_up_to_date")
+	next if !is_branch_up_to_date(git_branch: git_branch)
 
 	UI.message "Starting prerelease of VideoRenderer..."
 

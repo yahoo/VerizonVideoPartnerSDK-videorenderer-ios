@@ -107,9 +107,10 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                         self?.dispatch?(.playbackReady)
                     case .didChangeItemStatusToFailed(let error):
                         self?.dispatch?(.playbackFailed(error))
+                    case .didChangeRate(let new):
+                        self?.dispatch?(.didChangeRate(new))
                     case .didChangeTimebaseRate(let new):
-                        if new == 0 { self?.dispatch?(.playbackStopped) }
-                        else { self?.dispatch?(.playbackStarted) }
+                        self?.dispatch?(.didChangeTimebaseRate(new))
                     case .didChangeItemDuration(let new):
                         self?.dispatch?(.durationReceived(new))
                     case .didFinishPlayback:

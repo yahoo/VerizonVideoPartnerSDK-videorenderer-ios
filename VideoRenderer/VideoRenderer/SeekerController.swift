@@ -11,7 +11,7 @@ public final class SeekerController {
         self.player = player
     }
     
-    var currentTime: CMTime?
+    public var currentTime: CMTime?
     private var newTime: CMTime?
     private var activeSeekingTime: CMTime?
     

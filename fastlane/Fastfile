@@ -16,6 +16,24 @@ lane :release_videorenderer_description do |options|
 	description
 end
 
+desc "Builds sdk using 'carthage'."
+lane :build do |options|
+	if options[:clean] == true
+		# 1. clean Xcode Derived Data!!
+		clear_derived_data
+		# 2. clean Carthage Build folder!!!
+		sh "rm -rf /Carthage/Build"
+		# 3. clean Carthage Cache!!!!
+		sh "rm -rf ~/Library/Caches/org.carthage.CarthageKit"		
+	end
+	carthage(
+		command: "build",
+		project_directory: ".",
+		cache_builds: true,
+		platform: "iOS,tvOS",
+		no_skip_current: true)
+end
+
 # Usage like these expected 'fastlane release_videorenderer next_version:1.18 swift_version:3.2 token: 123'
 desc "Release VideoRenderer version"
 lane :release_videorenderer do |options|
@@ -42,9 +60,10 @@ lane :release_videorenderer do |options|
 	framework_name = "VideoRenderer"
 	archive_name = "#{framework_name}.framework.zip"
 
+	build(clean: true)
 	carthage(
 		command: "archive",
-		project_directory: "VideoRenderer/",
+		project_directory: "./",
 		frameworks: framework_name,
 		output: archive_name)
 
@@ -60,9 +79,10 @@ lane :release_videorenderer do |options|
 		api_token: token,
 		upload_assets: [archive_name])
 
+	podspec_name = "VideoRenderer.podspec"
+
 	release['assets'].each do |asset|
 		next unless asset['name'] == archive_name
-		podspec_name = "VideoRenderer.podspec"
 		update_podspec(
 			framewokr_link_url: asset['browser_download_url'],
 			podspec_path: podspec_name,
@@ -78,4 +98,6 @@ lane :release_videorenderer do |options|
 	reset_git_repo(
 			force: true,
 			files: [podspec_name])
+
+	sh "rm ../#{archive_name}"
 end

@@ -95,9 +95,5 @@ lane :release_videorenderer do |options|
 			swift_version: swift_version)
 	end
 
-	reset_git_repo(
-			force: true,
-			files: [podspec_name])
-
-	sh "rm ../#{archive_name}"
+	reset_git_repo(force: true)
 end

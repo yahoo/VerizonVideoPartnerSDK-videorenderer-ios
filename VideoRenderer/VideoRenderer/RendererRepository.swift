@@ -43,7 +43,7 @@ extension Renderer {
         public var angles: (vertical: Float, horizontal: Float)
         public var content: URL
         public var rate: Float
-        public var volume: Float
+        public var isMuted: Bool
         public var currentTime: CMTime?
         public var pictureInPictureActive: Bool
         public var allowsExternalPlayback: Bool
@@ -59,7 +59,7 @@ extension Renderer {
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
                     rate: Float,
-                    volume: Float,
+                    isMuted: Bool,
                     currentTime: CMTime?,
                     pictureInPictureActive: Bool,
                     allowsExternalPlayback: Bool,
@@ -68,7 +68,7 @@ extension Renderer {
             self.angles = angles
             self.content = content
             self.rate = rate
-            self.volume = volume
+            self.isMuted = isMuted
             self.currentTime = currentTime
             self.pictureInPictureActive = pictureInPictureActive
             self.allowsExternalPlayback = allowsExternalPlayback

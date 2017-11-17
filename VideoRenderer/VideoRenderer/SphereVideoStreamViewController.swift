@@ -157,7 +157,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 })
             }
             
-            currentPlayer.volume = props.volume
+            currentPlayer.isMuted = props.isMuted
             
             if currentPlayer.rate != props.rate {
                 currentPlayer.rate = props.rate

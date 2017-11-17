@@ -108,6 +108,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 if let timeObserver = timeObserver {
                     player?.removeTimeObserver(timeObserver)
                 }
+                timeObserver = nil
                 
                 if let asset = player?.currentItem?.asset {
                     let durationStatus = asset.statusOfValue(forKey: "duration", error: nil)
@@ -122,7 +123,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 player = nil
                 observer = nil
                 pictureInPictureObserver = nil
-                timeObserver = nil
                 seekerController = nil
                 
                 return
@@ -242,6 +242,15 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             //                allowVerticalBars: props.allowVerticalBars,
             //                allowHorizontalBars: props.allowHorizontalBars
             //            )
+            
+            if props.hasDuration == false,
+                let item = player?.currentItem {
+                if case .loaded = item.asset.statusOfValue(forKey: "duration", error: nil) {
+                    dispatch?(.durationReceived(item.asset.duration))
+                } else {
+                    fatalError("No duration here! Bad situation!")
+                }
+            }
             
             seekerController?.process(to: props.currentTime)
             

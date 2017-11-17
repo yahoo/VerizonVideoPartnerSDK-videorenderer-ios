@@ -45,6 +45,7 @@ extension Renderer {
         public var rate: Float
         public var isMuted: Bool
         public var currentTime: CMTime?
+        public var hasDuration: Bool
         public var pictureInPictureActive: Bool
         public var allowsExternalPlayback: Bool
         public var audible: MediaSelection
@@ -61,6 +62,7 @@ extension Renderer {
                     rate: Float,
                     isMuted: Bool,
                     currentTime: CMTime?,
+                    hasDuration: Bool,
                     pictureInPictureActive: Bool,
                     allowsExternalPlayback: Bool,
                     audible: MediaSelection,
@@ -70,6 +72,7 @@ extension Renderer {
             self.rate = rate
             self.isMuted = isMuted
             self.currentTime = currentTime
+            self.hasDuration = hasDuration
             self.pictureInPictureActive = pictureInPictureActive
             self.allowsExternalPlayback = allowsExternalPlayback
             self.audible = audible

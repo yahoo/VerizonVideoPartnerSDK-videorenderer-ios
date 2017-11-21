@@ -243,13 +243,19 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             //                allowHorizontalBars: props.allowHorizontalBars
             //            )
             
-            if props.hasDuration == false,
-                let item = player?.currentItem {
-                if case .loaded = item.asset.statusOfValue(forKey: "duration", error: nil) {
-                    dispatch?(.durationReceived(item.asset.duration))
-                } else {
-                    fatalError("No duration here! Bad situation!")
+            func newDuration() -> CMTime? {
+                guard props.hasDuration == false, let item = currentPlayer.currentItem else { return nil }
+                
+                guard case .loaded = item.asset.statusOfValue(forKey: "duration", error: nil) else {
+                    //TODO: this should be reported to telemetry
+                    return nil
                 }
+                guard !CMTIME_IS_INDEFINITE(item.asset.duration) else { return nil }
+                return item.asset.duration
+            }
+            if let duration = newDuration() {
+                dispatch?(.durationReceived(duration))
+                return
             }
             
             seekerController?.process(to: props.currentTime)

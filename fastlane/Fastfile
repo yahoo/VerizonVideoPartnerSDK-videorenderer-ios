@@ -34,13 +34,13 @@ lane :build do |options|
 		no_skip_current: true)
 end
 
-# Usage like these expected 'fastlane release_videorenderer next_version:1.18 swift_version:3.2 token: 123'
+# Usage like these expected 'bundle exec fastlane release_videorenderer version:1.18 swift_version:3.2 token: 123'
 desc "Release VideoRenderer version"
 lane :release_videorenderer do |options|
 	next if !is_branch_up_to_date(git_branch: git_branch)
 
-	version = options[:next_version]
-	UI.user_error!("Expecting `next_version`!") unless version != nil
+	version = options[:version]
+	UI.user_error!("Expecting `version`!") unless version != nil
 
 	token = options[:token]
 	UI.user_error!("Expecting `token`!") unless token != nil

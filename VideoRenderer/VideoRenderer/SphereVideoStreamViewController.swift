@@ -145,6 +145,21 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             
+            func newDuration() -> CMTime? {
+                guard props.hasDuration == false, let item = currentPlayer.currentItem else { return nil }
+                
+                guard case .loaded = item.asset.statusOfValue(forKey: "duration", error: nil) else {
+                    //TODO: this should be reported to telemetry
+                    return nil
+                }
+                guard !CMTIME_IS_INDEFINITE(item.asset.duration) else { return nil }
+                return item.asset.duration
+            }
+            if let duration = newDuration() {
+                dispatch?(.durationReceived(duration))
+                return
+            }
+            
             seekerController?.process(to: props.currentTime)
             
             if timeObserver == nil {

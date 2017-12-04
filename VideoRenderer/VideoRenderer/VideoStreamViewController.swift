@@ -234,7 +234,9 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
             }
             
-            currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
+            if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
+                currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
+            }
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
             

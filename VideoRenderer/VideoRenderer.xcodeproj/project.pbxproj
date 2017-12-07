@@ -20,6 +20,7 @@
 		DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */; };
 		DEA993C01E83FF5300EB3B8A /* VideoGravityStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */; };
 		DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993C11E83FF8200EB3B8A /* Action.swift */; };
+		DED8F33A1FBB34E1005BA836 /* MediaCharacteristicRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */; };
 		FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 		DEA993BB1E83FF1D00EB3B8A /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SphereVideoStreamViewController.swift; sourceTree = "<group>"; };
 		DEA993C11E83FF8200EB3B8A /* Action.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
+		DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCharacteristicRenderer.swift; sourceTree = "<group>"; };
 		FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureInPictureControllerObserver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -103,6 +105,7 @@
 				DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */,
 				DEA993871E83FE0600EB3B8A /* VideoRenderer.h */,
 				DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */,
+				DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */,
 				DEA993B51E83FF0900EB3B8A /* SeekerController.swift */,
 				DEA993B61E83FF0900EB3B8A /* ContentRendererViewController.swift */,
 				DEA993BA1E83FF1D00EB3B8A /* SphereView.swift */,
@@ -243,6 +246,7 @@
 				DEA993B21E83FEF300EB3B8A /* SystemPlayerObserver.swift in Sources */,
 				DEA993BE1E83FF1D00EB3B8A /* Camera.swift in Sources */,
 				DEA993BD1E83FF1D00EB3B8A /* SphereView.swift in Sources */,
+				DED8F33A1FBB34E1005BA836 /* MediaCharacteristicRenderer.swift in Sources */,
 				DEA993B81E83FF0900EB3B8A /* SeekerController.swift in Sources */,
 				DEA993B91E83FF0900EB3B8A /* ContentRendererViewController.swift in Sources */,
 				DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */,

@@ -104,7 +104,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     
     public var props: Renderer.Props? {
         didSet {
-            guard let props = props, view.window != nil else {
+            guard let props = props else {
                 if let timeObserver = timeObserver {
                     player?.removeTimeObserver(timeObserver)
                 }

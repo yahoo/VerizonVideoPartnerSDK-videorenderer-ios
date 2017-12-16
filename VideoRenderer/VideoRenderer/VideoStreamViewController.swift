@@ -233,17 +233,13 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     }
                 }
             }
-            
+    
+
             if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
                 currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
             }
             
             guard currentPlayer.currentItem?.status == .readyToPlay else { return }
-            
-            //            videoView?.resizeOptions = VideoStreamView.ResizeOptions(
-            //                allowVerticalBars: props.allowVerticalBars,
-            //                allowHorizontalBars: props.allowHorizontalBars
-            //            )
             
             func newDuration() -> CMTime? {
                 guard props.hasDuration == false, let item = currentPlayer.currentItem else { return nil }

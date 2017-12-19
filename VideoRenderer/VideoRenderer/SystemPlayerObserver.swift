@@ -236,17 +236,20 @@ public final class SystemPlayerObserver: NSObject {
             guard let new: AVAsset = newValue() else { return }
             emit(.didChangeAsset(new))
             
-            guard new.duration == kCMTimeIndefinite else {
-                self.emit(.didChangeItemDuration(to: new.duration))
-                return
+            let status = new.statusOfValue(forKey: #keyPath(AVAsset.duration), error: nil)
+            switch status {
+            case .unknown, .loading, .cancelled, .failed:
+                new.loadValuesAsynchronously(forKeys: [#keyPath(AVAsset.duration)],
+                                             completionHandler: { [weak self] in
+                                                guard case .loaded = new.statusOfValue(forKey: #keyPath(AVAsset.duration),
+                                                                                       error: nil) else { return }
+                                                self?.emit(.didChangeItemDuration(to: new.duration))
+                })
+            case .loaded:
+                if new.duration != kCMTimeIndefinite {
+                    emit(.didChangeItemDuration(to: new.duration))
+                }
             }
-            
-            new.loadValuesAsynchronously(forKeys: [#keyPath(AVAsset.duration)],
-                                         completionHandler: { [weak self] in
-                                            guard case .loaded = new.statusOfValue(forKey: #keyPath(AVAsset.duration),
-                                                                                   error: nil) else { return }
-                                            self?.emit(.didChangeItemDuration(to: new.duration))
-            })
             
         default:
             super.observeValue(

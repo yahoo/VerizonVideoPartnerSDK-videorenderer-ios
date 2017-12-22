@@ -1,10 +1,4 @@
-//
-//  VideoRenderer.h
-//  VideoRenderer
-//
-//  Created by Alexey Demedetskii on 3/23/17.
-//  Copyright © 2017 Aol.mobile. All rights reserved.
-//
+//  Copyright © 2017 Oath. All rights reserved.
 
 #import <UIKit/UIKit.h>
 

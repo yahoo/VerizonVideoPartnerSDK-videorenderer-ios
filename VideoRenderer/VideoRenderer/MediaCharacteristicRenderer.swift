@@ -18,21 +18,21 @@ extension UUIDPhantom {
 func first<T, U>(pair: (T, U)) -> T { return pair.0 }
 func second<T, U>(pair: (T, U)) -> U { return pair.1 }
 
-public struct AudibleOption: UUIDPhantom {
-    public let uuid = UUID()
+public struct Option: UUIDPhantom {
+    public let uuid: UUID
     public let name: String
-}
-
-public struct LegibleOption: UUIDPhantom {
-    public let uuid = UUID()
-    public let name: String
+    
+    public init(uuid: UUID = UUID(), name: String) {
+        self.uuid = uuid
+        self.name = name
+    }
 }
 
 public struct AvailableMediaOptions {
-    let unselectedAudibleOptions: [AudibleOption]
-    let selectedAudibleOption: AudibleOption?
-    let unselectedLegibleOptions: [LegibleOption]
-    let selectedLegibleOption: LegibleOption?
+    public let unselectedAudibleOptions: [Option]
+    public let selectedAudibleOption: Option?
+    public let unselectedLegibleOptions: [Option]
+    public let selectedLegibleOption: Option?
 }
 
 class MediaCharacteristicRenderer {
@@ -41,14 +41,14 @@ class MediaCharacteristicRenderer {
         let item: AVPlayerItem
         let didStartMediaOptionsDiscovery: () -> ()
         let didDiscoverMediaOptions: (AvailableMediaOptions) -> ()
-        let selectedAudibleOption: AudibleOption?
-        let selectedLegibleOption: LegibleOption?
+        var selectedAudibleOption: Option?
+        var selectedLegibleOption: Option?
     }
     
     struct MediaOptionCache {
         let item: AVPlayerItem
-        var audibleOptions: [AudibleOption: AVMediaSelectionOption] = [:]
-        var legibleOptions: [LegibleOption: AVMediaSelectionOption] = [:]
+        var audibleOptions: [Option: AVMediaSelectionOption] = [:]
+        var legibleOptions: [Option: AVMediaSelectionOption] = [:]
     }
     
     var mediaOptionCache: MediaOptionCache?
@@ -82,11 +82,11 @@ class MediaCharacteristicRenderer {
                     let legibleOptions = legibleGroup?.options.filter(AVMediaSelectionOption.hasLanguageTag) ?? []
                     
                     let audibleOptionsPairs = audibleOptions.map { option in
-                        (AudibleOption(name: option.displayName), option)
+                        (Option(name: option.displayName), option)
                     }
                     
                     let legibleOptionsPairs = legibleOptions.map { option in
-                        (LegibleOption(name: option.displayName), option)
+                        (Option(name: option.displayName), option)
                     }
                     
                     self.mediaOptionCache = MediaOptionCache(

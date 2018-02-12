@@ -214,7 +214,9 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
             }
     
-
+            mediaCharacteristicRenderer.props?.selectedLegibleOption = props.legible
+            mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
+            
             if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
                 currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
             }

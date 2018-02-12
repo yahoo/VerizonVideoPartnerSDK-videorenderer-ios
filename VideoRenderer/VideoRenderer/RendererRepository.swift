@@ -47,8 +47,8 @@ extension Renderer {
         public var hasDuration: Bool
         public var pictureInPictureActive: Bool
         public var allowsExternalPlayback: Bool
-        public var audible: AudibleOption?
-        public var legible: LegibleOption?
+        public var audible: Option?
+        public var legible: Option?
         
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
@@ -58,8 +58,8 @@ extension Renderer {
                     hasDuration: Bool,
                     pictureInPictureActive: Bool,
                     allowsExternalPlayback: Bool,
-                    audible: AudibleOption?,
-                    legible: LegibleOption?) {
+                    audible: Option?,
+                    legible: Option?) {
             self.angles = angles
             self.content = content
             self.rate = rate

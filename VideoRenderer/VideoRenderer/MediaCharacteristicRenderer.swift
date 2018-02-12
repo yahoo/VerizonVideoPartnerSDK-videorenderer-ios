@@ -106,24 +106,19 @@ class MediaCharacteristicRenderer {
                         var legibleOptionsPairs = legibleOptions.map { option in
                             (Option(name: option.displayName), option)
                         }
-                        legibleOptionsPairs.insert((Option(name: "None"), AVMediaSelectionOption()), at: 0)
-                        self.mediaOptionCache?.legibleOptions = Dictionary(uniqueKeysWithValues: legibleOptionsPairs)
-                        let selectedLegibleOption = legibleGroup.flatMap { item.selectedMediaOption(in: $0) }
-                        let unselectedLegibleOptionsPairs = legibleOptionsPairs.filter {
-                            $0.1 != selectedLegibleOption
-                        }
                         // Selected 'None' as default
-                        let selectedLegibleOptionsPair = legibleOptionsPairs.first
+                        let selectedAudibleOptionPair = (Option(name: "None"), AVMediaSelectionOption())
+                        legibleOptionsPairs.insert(selectedAudibleOptionPair, at: 0)
+                        
+                        self.mediaOptionCache?.legibleOptions = Dictionary(uniqueKeysWithValues: legibleOptionsPairs)
                         return .init(
-                            unselectedOptions: unselectedLegibleOptionsPairs.map(first),
-                            selectedOption: selectedLegibleOptionsPair?.0)
+                            unselectedOptions: legibleOptionsPairs.map(first),
+                            selectedOption: selectedAudibleOptionPair.0)
                     }
-                    
                     
                     self.props?.didDiscoverAudibleOptions(audibleOptions())
                     self.props?.didDiscoverLegibleOptions(legibleOptions())
                 }
-                
             case .loading: break // Do nothing
             case .loaded:
                 if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {

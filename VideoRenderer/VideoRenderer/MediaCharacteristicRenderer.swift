@@ -85,9 +85,10 @@ class MediaCharacteristicRenderer {
                         (Option(name: option.displayName), option)
                     }
                     
-                    let legibleOptionsPairs = legibleOptions.map { option in
+                    var legibleOptionsPairs = legibleOptions.map { option in
                         (Option(name: option.displayName), option)
                     }
+                    legibleOptionsPairs.insert((Option(name: "None"), AVMediaSelectionOption()), at: 0)
                     
                     self.mediaOptionCache = MediaOptionCache(
                         item: item,
@@ -110,10 +111,8 @@ class MediaCharacteristicRenderer {
                         $0.1 != selectedLegibleOption
                     }
                     
-                    let selectedLegibleOptionsPair = legibleOptionsPairs.first {
-                        $0.1 == selectedLegibleOption
-                    }
-                    
+                    // Selected 'None' as default
+                    let selectedLegibleOptionsPair = legibleOptionsPairs.first
                     
                     let availableOptions = AvailableMediaOptions(
                         unselectedAudibleOptions: unselectedAudibleOptionsPairs.map(first),

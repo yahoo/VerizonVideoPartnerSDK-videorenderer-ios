@@ -94,7 +94,8 @@ extension Renderer {
         case externalPlaybackAllowance(Bool)
         case externalPlaybackPossible(Bool)
         case averageVideoBitrateUpdated(Double)
-        case updateMediaOptions(AvailableMediaOptions)
+        case updateAudibleOptions(AvailableMediaOptions)
+        case updateLegibleOptions(AvailableMediaOptions)
         case startDiscoveringMediaOptions
         
         public struct MediaSelectionGroup {

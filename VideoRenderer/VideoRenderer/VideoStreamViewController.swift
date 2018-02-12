@@ -208,7 +208,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     mediaCharacteristicRenderer.props = MediaCharacteristicRenderer.Props(
                         item: item,
                         didStartMediaOptionsDiscovery: { dispatch?(.startDiscoveringMediaOptions) },
-                        didDiscoverMediaOptions: { dispatch?(.updateMediaOptions($0)) },
+                        didDiscoverAudibleOptions: { dispatch?(.updateAudibleOptions($0)) },
+                        didDiscoverLegibleOptions: { dispatch?(.updateLegibleOptions($0)) },
                         selectedAudibleOption: props.audible,
                         selectedLegibleOption: props.legible)
                 }

@@ -39,6 +39,8 @@ public struct Renderer {
 
 extension Renderer {
     public struct Props {
+        public typealias Option = AvailableMediaOptions.Option
+        
         public var angles: (vertical: Float, horizontal: Float)
         public var content: URL
         public var rate: Float

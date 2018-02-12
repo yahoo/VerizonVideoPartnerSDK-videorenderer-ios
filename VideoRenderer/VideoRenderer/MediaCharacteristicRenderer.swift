@@ -18,17 +18,17 @@ extension UUIDPhantom {
 func first<T, U>(pair: (T, U)) -> T { return pair.0 }
 func second<T, U>(pair: (T, U)) -> U { return pair.1 }
 
-public struct Option: UUIDPhantom {
-    public let uuid: UUID
-    public let name: String
-    
-    public init(uuid: UUID = UUID(), name: String) {
-        self.uuid = uuid
-        self.name = name
-    }
-}
-
 public struct AvailableMediaOptions {
+    public struct Option: UUIDPhantom {
+        public let uuid: UUID
+        public let name: String
+        
+        public init(uuid: UUID = UUID(), name: String) {
+            self.uuid = uuid
+            self.name = name
+        }
+    }
+    
     public let unselectedAudibleOptions: [Option]
     public let selectedAudibleOption: Option?
     public let unselectedLegibleOptions: [Option]
@@ -36,6 +36,7 @@ public struct AvailableMediaOptions {
 }
 
 class MediaCharacteristicRenderer {
+    typealias Option = AvailableMediaOptions.Option
     
     struct Props {
         let item: AVPlayerItem

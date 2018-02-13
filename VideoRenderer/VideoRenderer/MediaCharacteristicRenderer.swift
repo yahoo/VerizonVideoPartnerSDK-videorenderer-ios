@@ -29,6 +29,8 @@ public struct AvailableMediaOptions {
         }
     }
     
+    public static let empty = AvailableMediaOptions(unselectedOptions: [],
+                                                    selectedOption: nil)
     public let unselectedOptions: [Option]
     public let selectedOption: Option?
 }
@@ -81,43 +83,39 @@ class MediaCharacteristicRenderer {
                     
                     self.mediaOptionCache = MediaOptionCache(item: item)
                     
-                    func audibleOptions() -> AvailableMediaOptions {
-                        let audibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible)
-                        let audibleOptions = audibleGroup?.options ?? []
-                        let audibleOptionsPairs = audibleOptions.map { option in
-                            (Option(name: option.displayName), option)
-                        }
+                    func mapToPair(option: AVMediaSelectionOption) -> (Option, AVMediaSelectionOption) {
+                        return (Option(name: option.displayName), option)
+                    }
+                    
+                    let audibleOptions: AvailableMediaOptions = {
+                        guard let audibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) else { return .empty }
+                        let audibleOptionsPairs = audibleGroup.options.map(mapToPair)
                         self.mediaOptionCache?.audibleOptions = Dictionary(uniqueKeysWithValues: audibleOptionsPairs)
-                        let selectedAudibleOption = audibleGroup.flatMap { item.selectedMediaOption(in: $0) }
                         let selectedAudibleOptionPair = audibleOptionsPairs.first {
-                            $0.1 == selectedAudibleOption
+                            $0.1 == item.selectedMediaOption(in: audibleGroup)
                         }
-                        let unselectedAudibleOptionsPairs = audibleOptionsPairs.filter {
-                            $0.1 != selectedAudibleOption
-                        }
-                        return .init(
-                            unselectedOptions: unselectedAudibleOptionsPairs.map(first),
-                            selectedOption: selectedAudibleOptionPair?.0)
-                    }
+                        return .init(unselectedOptions: audibleOptionsPairs.map(first),
+                                     selectedOption: selectedAudibleOptionPair?.0)
+                    }()
                     
-                    func legibleOptions() -> AvailableMediaOptions {
-                        let legibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible)
-                        let legibleOptions = legibleGroup?.options.filter(AVMediaSelectionOption.hasLanguageTag) ?? []
-                        var legibleOptionsPairs = legibleOptions.map { option in
-                            (Option(name: option.displayName), option)
-                        }
-                        // Selected 'None' as default
-                        let selectedAudibleOptionPair = (Option(name: "None"), AVMediaSelectionOption())
-                        legibleOptionsPairs.insert(selectedAudibleOptionPair, at: 0)
-                        
+                    self.props?.didDiscoverAudibleOptions(audibleOptions)
+                    
+                    let legibleOptions: AvailableMediaOptions = {
+                        guard let legibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) else { return .empty }
+                        let legibleOptionsPairs: [(Option, AVMediaSelectionOption)] = {
+                            var pairs = legibleGroup.options
+                                .filter(AVMediaSelectionOption.hasLanguageTag)
+                                .map(mapToPair)
+                            // Add 'None' option on top. Selected by default
+                            pairs.insert((Option(name: "None"), AVMediaSelectionOption()), at: 0)
+                            return pairs
+                        }()
                         self.mediaOptionCache?.legibleOptions = Dictionary(uniqueKeysWithValues: legibleOptionsPairs)
-                        return .init(
-                            unselectedOptions: legibleOptionsPairs.map(first),
-                            selectedOption: selectedAudibleOptionPair.0)
-                    }
+                        return .init(unselectedOptions: legibleOptionsPairs.map(first),
+                                     selectedOption: legibleOptionsPairs.first?.0)
+                    }()
                     
-                    self.props?.didDiscoverAudibleOptions(audibleOptions())
-                    self.props?.didDiscoverLegibleOptions(legibleOptions())
+                    self.props?.didDiscoverLegibleOptions(legibleOptions)
                 }
             case .loading: break // Do nothing
             case .loaded:

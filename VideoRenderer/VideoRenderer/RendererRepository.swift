@@ -39,6 +39,8 @@ public struct Renderer {
 
 extension Renderer {
     public struct Props {
+        public typealias Option = AvailableMediaOptions.Option
+        
         public var angles: (vertical: Float, horizontal: Float)
         public var content: URL
         public var rate: Float
@@ -47,14 +49,8 @@ extension Renderer {
         public var hasDuration: Bool
         public var pictureInPictureActive: Bool
         public var allowsExternalPlayback: Bool
-        public var audible: MediaSelection
-        public var legible: MediaSelection
-        
-        public enum MediaSelection {
-            case disabled
-            case off
-            case on(propertyList: Data)
-        }
+        public var audible: Option?
+        public var legible: Option?
         
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
@@ -64,8 +60,8 @@ extension Renderer {
                     hasDuration: Bool,
                     pictureInPictureActive: Bool,
                     allowsExternalPlayback: Bool,
-                    audible: MediaSelection,
-                    legible: MediaSelection) {
+                    audible: Option?,
+                    legible: Option?) {
             self.angles = angles
             self.content = content
             self.rate = rate
@@ -98,8 +94,9 @@ extension Renderer {
         case externalPlaybackAllowance(Bool)
         case externalPlaybackPossible(Bool)
         case averageVideoBitrateUpdated(Double)
-        case audibleSelectionGroup(MediaSelectionGroup)
-        case legibleSelectionGroup(MediaSelectionGroup)
+        case updateAudibleOptions(AvailableMediaOptions)
+        case updateLegibleOptions(AvailableMediaOptions)
+        case startDiscoveringMediaOptions
         
         public struct MediaSelectionGroup {
             public let selectedOption: AVMediaSelectionOption?

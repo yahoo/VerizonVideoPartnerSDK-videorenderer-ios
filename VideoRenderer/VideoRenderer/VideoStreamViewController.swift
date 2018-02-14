@@ -82,6 +82,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     
     private var timeObserver: Any?
     private var seekerController: SeekerController? = nil
+    private var mediaCharacteristicRenderer = MediaCharacteristicRenderer()
     private var pictureInPictureController: AnyObject?
     
     override public func loadView() {
@@ -123,6 +124,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 observer = nil
                 pictureInPictureObserver = nil
                 seekerController = nil
+                mediaCharacteristicRenderer.props = nil
                 
                 return
             }
@@ -200,40 +202,22 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     })
                 }
                 
+                let dispatch = self.dispatch
+                
                 if let item = player?.currentItem {
-                    let key = "availableMediaCharacteristicsWithMediaSelectionOptions"
-                    item.asset.loadValuesAsynchronously(forKeys: [key]) { [weak self] in
-                        var error: NSError? = nil
-                        let status = item.asset.statusOfValue(forKey: key, error: &error)
-                        guard case .loaded = status else { return }
-                        for characteristic in item.asset.availableMediaCharacteristicsWithMediaSelectionOptions {
-                            guard let group = item.asset.mediaSelectionGroup(
-                                forMediaCharacteristic: characteristic)
-                                else { return }
-                            let options: [AVMediaSelectionOption] = {
-                                guard characteristic == AVMediaCharacteristicLegible else { return group.options }
-                                return group.options.filter(AVMediaSelectionOption.hasLanguageTag)
-                            }()
-                            let selectedOption = item.selectedMediaOption(in: group)
-                            switch characteristic {
-                            case AVMediaCharacteristicAudible:
-                                self?.dispatch?(.audibleSelectionGroup(
-                                    .init(
-                                        selectedOption: selectedOption,
-                                        options: options)))
-                            case AVMediaCharacteristicLegible:
-                                self?.dispatch?(.legibleSelectionGroup(
-                                    .init(
-                                        selectedOption: selectedOption,
-                                        options: options)))
-                            default: break
-                            }
-                        }
-                    }
+                    mediaCharacteristicRenderer.props = MediaCharacteristicRenderer.Props(
+                        item: item,
+                        didStartMediaOptionsDiscovery: { dispatch?(.startDiscoveringMediaOptions) },
+                        didDiscoverAudibleOptions: { dispatch?(.updateAudibleOptions($0)) },
+                        didDiscoverLegibleOptions: { dispatch?(.updateLegibleOptions($0)) },
+                        selectedAudibleOption: props.audible,
+                        selectedLegibleOption: props.legible)
                 }
             }
     
-
+            mediaCharacteristicRenderer.props?.selectedLegibleOption = props.legible
+            mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
+            
             if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
                 currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
             }
@@ -286,34 +270,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                     }
                 }
             #endif
-            
-            func selectOption(for player: AVPlayer,
-                              characteristic: String,
-                              mediaSelection: Renderer.Props.MediaSelection) {
-                guard let item = currentPlayer.currentItem else { return }
-                guard let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: characteristic) else { return }
-                switch mediaSelection {
-                case .on(let optionPropertyList):
-                    guard let propertyList = try? PropertyListSerialization
-                        .propertyList(from: optionPropertyList,
-                                      options: .mutableContainers,
-                                      format: nil) else { return }
-                    let mediaOption = group.mediaSelectionOption(withPropertyList: propertyList)
-                    guard mediaOption != item.selectedMediaOption(in: group) else { return }
-                    
-                    item.select(mediaOption, in: group)
-                case .off:
-                    item.select(nil, in: group)
-                case .disabled: break
-                }
-            }
-            
-            selectOption(for: currentPlayer,
-                         characteristic: AVMediaCharacteristicAudible,
-                         mediaSelection: props.audible)
-            selectOption(for: currentPlayer,
-                         characteristic: AVMediaCharacteristicLegible,
-                         mediaSelection: props.legible)
         }
     }
 }

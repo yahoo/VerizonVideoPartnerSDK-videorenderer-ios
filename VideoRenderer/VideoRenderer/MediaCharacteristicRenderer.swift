@@ -35,7 +35,7 @@ public struct AvailableMediaOptions {
     public let selectedOption: Option?
 }
 
-class MediaCharacteristicRenderer {
+final class MediaCharacteristicRenderer {
     typealias Option = AvailableMediaOptions.Option
     
     struct Props {

@@ -120,19 +120,17 @@ final class MediaCharacteristicRenderer {
             case .loading: break // Do nothing
             case .loaded:
                 if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
-                    let selectedOption = props?.selectedAudibleOption.flatMap {
-                        mediaOptionCache?.audibleOptions[$0]
-                    }
+                    guard let selectedOption = props?.selectedAudibleOption else { return }
+                    guard let option = mediaOptionCache?.audibleOptions[selectedOption] else { return }
                     
-                    item.select(selectedOption, in: group)
+                    item.select(option, in: group)
                 }
                 
                 if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
-                    let selectedOption = props?.selectedLegibleOption.flatMap {
-                        mediaOptionCache?.legibleOptions[$0]
-                    }
+                    guard let selectedOption = props?.selectedLegibleOption else { return }
+                    guard let option = mediaOptionCache?.legibleOptions[selectedOption] else { return }
                     
-                    item.select(selectedOption, in: group)
+                    item.select(option, in: group)
                 }
                 
             case .failed: break // Maybe we should notify failure via props?

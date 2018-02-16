@@ -134,7 +134,7 @@ final class MediaCharacteristicRenderer {
 }
 
 extension Array {
-    internal func extend(element: Element, onTop: Bool = true) -> [Element] {
+    fileprivate func extend(element: Element, onTop: Bool = true) -> [Element] {
         var new = self
         onTop ? new.insert(element, at: 0) : new.append(element)
         return new

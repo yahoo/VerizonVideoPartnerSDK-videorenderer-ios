@@ -15,9 +15,6 @@ extension UUIDPhantom {
     }
 }
 
-func first<T, U>(pair: (T, U)) -> T { return pair.0 }
-func second<T, U>(pair: (T, U)) -> U { return pair.1 }
-
 public struct AvailableMediaOptions {
     public struct Option: UUIDPhantom {
         public let uuid: UUID
@@ -52,9 +49,7 @@ final class MediaCharacteristicRenderer {
         var audibleOptions: [Option: AVMediaSelectionOption] = [:]
         var legibleOptions: [Option: AVMediaSelectionOption] = [:]
         
-        init(item: AVPlayerItem) {
-            self.item = item
-        }
+        init(item: AVPlayerItem) { self.item = item }
     }
     
     var mediaOptionCache: MediaOptionCache?
@@ -63,80 +58,85 @@ final class MediaCharacteristicRenderer {
         didSet {
             /// Verify that we have item to look for
             guard let item = props?.item else {
-                self.mediaOptionCache = nil
+                mediaOptionCache = nil
                 return
             }
             
-            if item != mediaOptionCache?.item { mediaOptionCache = nil }
+            let optionsForSelect: [AVMediaSelectionGroup: AVMediaSelectionOption]? = {
+                guard let props = props else { return nil }
+                guard let mediaOptionCache = mediaOptionCache else { return nil }
+                var options: [AVMediaSelectionGroup: AVMediaSelectionOption] = [:]
+                
+                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
+                    guard let selectedOption = props.selectedAudibleOption else { return nil }
+                    options[group] = mediaOptionCache.audibleOptions[selectedOption]
+                }
+                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
+                    guard let selectedOption = props.selectedLegibleOption else { return nil }
+                    options[group] = mediaOptionCache.legibleOptions[selectedOption]
+                }
+                
+                return options
+            }()
             
-            switch item.asset.statusOfValue(forKey: assetKey, error: nil) {
-            /// Load options
-            case .unknown:
-                props?.didStartMediaOptionsDiscovery()
-                item.asset.loadValuesAsynchronously(forKeys: [assetKey]) {
-                    // Ignore results that are not actual anymore
-                    guard self.props?.item == item else { return }
-                    
-                    let status = item.asset.statusOfValue(forKey: assetKey, error: nil)
-                    // Ignore failed results
-                    guard case .loaded = status else { return }
-                    
-                    self.mediaOptionCache = MediaOptionCache(item: item)
-                    
-                    func mapToPair(option: AVMediaSelectionOption) -> (Option, AVMediaSelectionOption) {
-                        return (Option(name: option.displayName), option)
-                    }
-                    
-                    let audibleOptions: AvailableMediaOptions = {
-                        guard let audibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) else { return .empty }
-                        let audibleOptionsPairs = audibleGroup.options.map(mapToPair)
+            optionsForSelect?.forEach { item.select($0.value, in: $0.key) }
+            
+            
+            guard item != mediaOptionCache?.item else { return }
+            
+            mediaOptionCache = MediaOptionCache(item: item)
+            
+            item.asset.loadValuesAsynchronously(forKeys: [assetKey]) { [weak self] in
+                guard let `self` = self else { return }
+                guard case .loaded = item.asset.statusOfValue(forKey: assetKey, error: nil) else { return }
+                
+                func mapToPair(option: AVMediaSelectionOption) -> (Option, AVMediaSelectionOption) {
+                    return (Option(name: option.displayName), option)
+                }
+                func first<T, U>(pair: (T, U)) -> T { return pair.0 }
+                
+                func audibleOptions() -> AvailableMediaOptions {
+                    func map(group: AVMediaSelectionGroup) -> AvailableMediaOptions {
+                        let audibleOptionsPairs = group.options.map(mapToPair)
                         self.mediaOptionCache?.audibleOptions = Dictionary(uniqueKeysWithValues: audibleOptionsPairs)
                         let selectedAudibleOptionPair = audibleOptionsPairs.first {
-                            $0.1 == item.selectedMediaOption(in: audibleGroup)
+                            $0.1 == item.selectedMediaOption(in: group)
                         }
                         return .init(unselectedOptions: audibleOptionsPairs.map(first),
                                      selectedOption: selectedAudibleOptionPair?.0)
-                    }()
-                    
-                    self.props?.didDiscoverAudibleOptions(audibleOptions)
-                    
-                    let legibleOptions: AvailableMediaOptions = {
-                        guard let legibleGroup = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) else { return .empty }
-                        let legibleOptionsPairs: [(Option, AVMediaSelectionOption)] = {
-                            var pairs = legibleGroup.options
-                                .filter(AVMediaSelectionOption.hasLanguageTag)
-                                .map(mapToPair)
+                    }
+                    return item.asset
+                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible)
+                        .flatMap(map) ?? .empty
+                }
+                self.props?.didDiscoverAudibleOptions(audibleOptions())
+                
+                func legibleOptions() -> AvailableMediaOptions {
+                    func map(group: AVMediaSelectionGroup) -> AvailableMediaOptions {
+                        let pairs = group.options
+                            .filter(AVMediaSelectionOption.hasLanguageTag)
+                            .map(mapToPair)
                             // Add 'None' option on top. Selected by default
-                            pairs.insert((Option(name: "None"), AVMediaSelectionOption()), at: 0)
-                            return pairs
-                        }()
-                        self.mediaOptionCache?.legibleOptions = Dictionary(uniqueKeysWithValues: legibleOptionsPairs)
-                        return .init(unselectedOptions: legibleOptionsPairs.map(first),
-                                     selectedOption: legibleOptionsPairs.first?.0)
-                    }()
-                    
-                    self.props?.didDiscoverLegibleOptions(legibleOptions)
-                }
-            case .loading: break // Do nothing
-            case .loaded:
-                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
-                    let selectedOption = props?.selectedAudibleOption.flatMap {
-                        mediaOptionCache?.audibleOptions[$0]
+                            .extend(element: (Option(name: "None"), AVMediaSelectionOption()),
+                                    onTop: true)
+                        self.mediaOptionCache?.legibleOptions = Dictionary(uniqueKeysWithValues: pairs)
+                        return .init(unselectedOptions: pairs.map(first),
+                                     selectedOption: pairs.first?.0)
                     }
-                    
-                    item.select(selectedOption, in: group)
+                    return item.asset
+                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible)
+                        .flatMap(map) ?? .empty
                 }
-                
-                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
-                    let selectedOption = props?.selectedLegibleOption.flatMap {
-                        mediaOptionCache?.legibleOptions[$0]
-                    }
-                    
-                    item.select(selectedOption, in: group)
-                }
-                
-            case .failed: break // Maybe we should notify failure via props?
-            case .cancelled: break}
+                self.props?.didDiscoverLegibleOptions(legibleOptions())
+            }
         }
+    }
+}
+
+extension Array {
+    internal func extend(element: Element, onTop: Bool = true) -> [Element] {
+        var new = self
+        onTop ? new.insert(element, at: 0) : new.append(element)
+        return new
     }
 }

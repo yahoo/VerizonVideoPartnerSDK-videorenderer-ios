@@ -1,99 +1,102 @@
-actions_path "actions/common/"
-actions_path "actions/common/cocoapods/"
-actions_path "actions/common/github/"
-actions_path "actions/common/sourcery/"
-actions_path "actions/common/json/"
-actions_path "actions/common/utils/"
+actions_path 'actions/common/'
+actions_path 'actions/common/cocoapods/'
+actions_path 'actions/common/github/'
+actions_path 'actions/common/sourcery/'
+actions_path 'actions/common/json/'
+actions_path 'actions/common/utils/'
 
-
-desc "Generate VideoRenderer release description"
+desc 'Generate VideoRenderer release description'
 lane :release_videorenderer_description do |options|
-	description = "Template description"
-	begin
-		description = github_changelog_generator(output: "unreleased.md", unreleased_only: true, token: options[:token])
-		UI.message description
-	end
-	description
+  description = 'Template description'
+  begin
+    description = github_changelog_generator(output: 'unreleased.md', unreleased_only: true, token: options[:token])
+    UI.message description
+  end
+  description
 end
 
 desc "Builds sdk using 'carthage'."
 lane :build do |options|
-	if options[:clean] == true
-		# 1. clean Xcode Derived Data!!
-		clear_derived_data
-		# 2. clean Carthage Build folder!!!
-		sh "rm -rf /Carthage/Build"
-		# 3. clean Carthage Cache!!!!
-		sh "rm -rf ~/Library/Caches/org.carthage.CarthageKit"		
-	end
-	carthage(
-		command: "build",
-		project_directory: ".",
-		cache_builds: true,
-		platform: "iOS,tvOS",
-		no_skip_current: true)
+  if options[:clean] == true
+    # 1. clean Xcode Derived Data!!
+    clear_derived_data
+    # 2. clean Carthage Build folder!!!
+    sh 'rm -rf /Carthage/Build'
+    # 3. clean Carthage Cache!!!!
+    sh 'rm -rf ~/Library/Caches/org.carthage.CarthageKit'
+  end
+  carthage(
+    command: 'build',
+    project_directory: '.',
+    cache_builds: true,
+    platform: 'iOS,tvOS',
+    no_skip_current: true
+  )
 end
 
 # Usage like these expected 'bundle exec fastlane release_videorenderer version:1.18 swift_version:3.2 token: 123'
-desc "Release VideoRenderer version"
+desc 'Release VideoRenderer version'
 lane :release_videorenderer do |options|
-	next if !is_branch_up_to_date(git_branch: git_branch)
+  next unless is_branch_up_to_date(git_branch: git_branch)
 
-	version = options[:version]
-	UI.user_error!("Expecting `version`!") unless version != nil
+  version = options[:version]
+  UI.user_error!('Expecting `version`!') if version.nil?
 
-	token = options[:token]
-	UI.user_error!("Expecting `token`!") unless token != nil
+  token = options[:token]
+  UI.user_error!('Expecting `token`!') if token.nil?
 
-	repo_name = "aol-public/OneMobileSDK-videorenderer-ios"
+  repo_name = 'aol-public/OneMobileSDK-videorenderer-ios'
 
-	is_release_exist = github_releases_api(action: "is_release_exist", repo_name: repo_name, version: version, token: token)
-	UI.user_error!("Release on tag #{version} already exists!") unless is_release_exist
+  is_release_exist = github_releases_api(action: 'is_release_exist', repo_name: repo_name, version: version, token: token)
+  UI.user_error!("Release on tag #{version} already exists!") unless is_release_exist
 
-	swift_version = options[:swift_version]
-	UI.user_error! "Expecting `swift_version`!" unless swift_version != nil
+  swift_version = options[:swift_version]
+  UI.user_error! 'Expecting `swift_version`!' if swift_version.nil?
 
-	next if !is_branch_up_to_date(git_branch: git_branch)
+  next unless is_branch_up_to_date(git_branch: git_branch)
 
-	UI.message "Starting prerelease of VideoRenderer..."
+  UI.message 'Starting prerelease of VideoRenderer...'
 
-	framework_name = "VideoRenderer"
-	archive_name = "#{framework_name}.framework.zip"
+  framework_name = 'VideoRenderer'
+  archive_name = "#{framework_name}.framework.zip"
 
-	build(clean: true)
-	carthage(
-		command: "archive",
-		project_directory: "./",
-		frameworks: framework_name,
-		output: archive_name)
+  build(clean: true)
+  carthage(
+    command: 'archive',
+    project_directory: './',
+    frameworks: framework_name,
+    output: archive_name
+  )
 
+  UI.important("Setup new #{version} release!")
+  release = set_github_release(
+    repository_name: repo_name,
+    name: "Version #{version}",
+    tag_name: version,
+    description: release_videorenderer_description(token: token),
+    is_draft: false,
+    is_prerelease: false,
+    api_token: token,
+    upload_assets: [archive_name]
+  )
 
-	UI.important("Setup new #{version} release!")
-	release = set_github_release(
-		repository_name: repo_name,
-		name: "Version #{version}",
-		tag_name: version,
-		description: release_videorenderer_description(token: token),
-		is_draft: false,
-		is_prerelease: false,
-		api_token: token,
-		upload_assets: [archive_name])
+  podspec_name = 'VideoRenderer.podspec'
 
-	podspec_name = "VideoRenderer.podspec"
+  release['assets'].each do |asset|
+    next unless asset['name'] == archive_name
+    update_podspec(
+      framewokr_link_url: asset['browser_download_url'],
+      podspec_path: podspec_name,
+      version: version
+    )
+    deploy_podspec(
+      podspec_path: podspec_name,
+      spec_repo_name: 'onemobile-sdk-podspecs',
+      spec_repo_url: 'git@github.com:vidible/OneMobileSDK-releases.git',
+      sources_repo: 'https://github.com/vidible/OneMobileSDK-releases.git',
+      swift_version: swift_version
+    )
+  end
 
-	release['assets'].each do |asset|
-		next unless asset['name'] == archive_name
-		update_podspec(
-			framewokr_link_url: asset['browser_download_url'],
-			podspec_path: podspec_name,
-			version: version)
-		deploy_podspec(
-			podspec_path: podspec_name, 
-			spec_repo_name: "onemobile-sdk-podspecs",
-			spec_repo_url: "git@github.com:vidible/OneMobileSDK-releases.git",
-			sources_repo: "https://github.com/vidible/OneMobileSDK-releases.git",
-			swift_version: swift_version)
-	end
-
-	reset_git_repo(force: true)
+  reset_git_repo(force: true)
 end

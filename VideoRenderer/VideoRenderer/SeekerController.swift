@@ -6,10 +6,12 @@ import AVFoundation
 import CoreMedia
 
 public final class SeekerController {
+    public let dispatcher: Renderer.Dispatch
     public let player: AVPlayer
     
-    public init(with player: AVPlayer) {
+    public init(with player: AVPlayer, dispatcher: @escaping Renderer.Dispatch) {
         self.player = player
+        self.dispatcher = dispatcher
     }
     
     public var currentTime: CMTime?
@@ -22,10 +24,13 @@ public final class SeekerController {
         guard let time = newTime else { return }
         guard activeSeekingTime == nil else { return }
         activeSeekingTime = time
+        dispatcher(.startSeek)
         player.seek(to: time,
                     toleranceBefore: CMTimeMake(0, 1),
                     toleranceAfter: CMTimeMake(1, 2)) { [weak self] _ in
-                        self?.activeSeekingTime = nil
+                        guard let `self` = self else { return }
+                        self.activeSeekingTime = nil
+                        self.dispatcher(.endSeek)
         }
     }
 }

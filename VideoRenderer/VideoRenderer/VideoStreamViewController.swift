@@ -193,7 +193,10 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
                 
                 player = currentPlayer
-                seekerController = SeekerController(with: currentPlayer)
+                
+                if let dispatch = self.dispatch {
+                    seekerController = SeekerController(with: currentPlayer, dispatcher: dispatch)
+                }
                 
                 if let pictureInPictureController = pictureInPictureController {
                     pictureInPictureObserver = PictureInPictureControllerObserver(
@@ -205,7 +208,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 }
                 
                 let dispatch = self.dispatch
-                
                 if let item = player?.currentItem {
                     mediaCharacteristicRenderer.props = MediaCharacteristicRenderer.Props(
                         item: item,

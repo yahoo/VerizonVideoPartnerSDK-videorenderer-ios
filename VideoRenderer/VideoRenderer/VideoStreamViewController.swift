@@ -194,8 +194,12 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 
                 player = currentPlayer
                 
-                if let dispatch = self.dispatch {
-                    seekerController = SeekerController(with: currentPlayer, dispatcher: dispatch)
+                seekerController = SeekerController(with: currentPlayer) { [weak self] in
+                    guard let dispatch = self?.dispatch else { return }
+                    switch $0 {
+                    case .startSeek: dispatch(.startSeek)
+                    case .stopSeek: dispatch(.stopSeek)
+                    }
                 }
                 
                 if let pictureInPictureController = pictureInPictureController {

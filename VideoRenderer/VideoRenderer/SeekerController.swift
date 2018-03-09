@@ -6,10 +6,17 @@ import AVFoundation
 import CoreMedia
 
 public final class SeekerController {
-    public let dispatcher: Renderer.Dispatch
+    public typealias Dispatch = (Event) -> Void
+    
+    public enum Event {
+        case startSeek
+        case stopSeek
+    }
+    
+    public let dispatcher: Dispatch
     public let player: AVPlayer
     
-    public init(with player: AVPlayer, dispatcher: @escaping Renderer.Dispatch) {
+    public init(with player: AVPlayer, dispatcher: @escaping Dispatch) {
         self.player = player
         self.dispatcher = dispatcher
     }
@@ -30,7 +37,7 @@ public final class SeekerController {
                     toleranceAfter: CMTimeMake(1, 2)) { [weak self] _ in
                         guard let `self` = self else { return }
                         self.activeSeekingTime = nil
-                        self.dispatcher(.endSeek)
+                        self.dispatcher(.stopSeek)
         }
     }
 }

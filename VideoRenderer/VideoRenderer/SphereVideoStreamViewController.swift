@@ -127,9 +127,9 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 
                 player = currentPlayer
                 
-                seekerController = SeekerController(with: currentPlayer) { [weak self] in
+                seekerController = SeekerController(with: currentPlayer) { [weak self] event in
                     guard let dispatch = self?.dispatch else { return }
-                    switch $0 {
+                    switch event {
                     case .startSeek: dispatch(.startSeek)
                     case .stopSeek: dispatch(.stopSeek)
                     }

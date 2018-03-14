@@ -38,7 +38,7 @@ public final class SystemPlayerObserver: NSObject {
         
         player.addObserver(self,
                            forKeyPath: #keyPath(AVPlayer.rate),
-                           options: [.initial, .new],
+                           options: [.new],
                            context: nil)
         
         player.addObserver(self,

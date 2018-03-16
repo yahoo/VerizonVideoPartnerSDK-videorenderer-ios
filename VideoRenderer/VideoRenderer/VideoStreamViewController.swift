@@ -197,8 +197,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 seekerController = SeekerController(with: currentPlayer) { [weak self] event in
                     guard let dispatch = self?.dispatch else { return }
                     switch event {
-                    case .startSeek: dispatch(.startSeek)
-                    case .stopSeek: dispatch(.stopSeek)
+                    case .startSeek: dispatch(.didStartSeek)
+                    case .stopSeek: dispatch(.didStopSeek)
                     }
                 }
                 

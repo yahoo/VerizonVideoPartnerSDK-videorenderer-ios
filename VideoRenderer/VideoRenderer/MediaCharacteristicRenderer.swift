@@ -56,32 +56,34 @@ final class MediaCharacteristicRenderer {
     var mediaOptionCache: MediaOptionCache?
     
     var props: Props? {
-        didSet {
+        didSet(oldProps) {
             /// Verify that we have item to look for
-            guard let item = props?.item else {
-                mediaOptionCache = nil
-                return
-            }
+            guard let item = props?.item else { return mediaOptionCache = nil }
             
-            let optionsForSelect: [AVMediaSelectionGroup: AVMediaSelectionOption]? = {
-                guard let props = props else { return nil }
-                guard let mediaOptionCache = mediaOptionCache else { return nil }
+            func selectedOptions() -> [AVMediaSelectionGroup: AVMediaSelectionOption] {
+                guard let props = props,
+                    item.asset.statusOfValue(forKey: assetKey, error: nil) == .loaded,
+                    let mediaOptionCache = mediaOptionCache
+                    else { return [:] }
                 var options: [AVMediaSelectionGroup: AVMediaSelectionOption] = [:]
-                
-                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
-                    guard let selectedOption = props.selectedAudibleOption else { return nil }
-                    options[group] = mediaOptionCache.audibleOptions[selectedOption]
+                if oldProps?.selectedAudibleOption != props.selectedAudibleOption,
+                    let selectedOption = props.selectedAudibleOption {
+                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
+                        options[group] = mediaOptionCache.audibleOptions[selectedOption]
+                    }
                 }
-                if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
-                    guard let selectedOption = props.selectedLegibleOption else { return nil }
-                    options[group] = mediaOptionCache.legibleOptions[selectedOption]
+
+                if oldProps?.selectedLegibleOption != props.selectedLegibleOption,
+                    let selectedOption = props.selectedLegibleOption {
+                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
+                        options[group] = mediaOptionCache.legibleOptions[selectedOption]
+                    }
                 }
-                
+
                 return options
-            }()
-            
-            optionsForSelect?.forEach { item.select($0.value, in: $0.key) }
-            
+            }
+
+            selectedOptions().forEach { item.select($0.value, in: $0.key) }
             
             guard item != mediaOptionCache?.item else { return }
             

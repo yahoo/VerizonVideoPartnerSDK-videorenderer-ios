@@ -20,6 +20,8 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeItemDuration(to: CMTime)
         case didChangeAsset(AVAsset)
         case didReceivePlayerError(Error)
+        case startSeek
+        case stopSeek
     }
     
     private var emit: Action<Event>

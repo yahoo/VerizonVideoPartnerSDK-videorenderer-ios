@@ -126,7 +126,14 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 }
                 
                 player = currentPlayer
-                seekerController = SeekerController(with: currentPlayer)
+                
+                seekerController = SeekerController(with: currentPlayer) { [weak self] event in
+                    guard let dispatch = self?.dispatch else { return }
+                    switch event {
+                    case .startSeek: dispatch(.didStartSeek)
+                    case .stopSeek: dispatch(.didStopSeek)
+                    }
+                }
                 
                 let pixelBufferAttributes = [
                     kCVPixelBufferPixelFormatTypeKey as String :

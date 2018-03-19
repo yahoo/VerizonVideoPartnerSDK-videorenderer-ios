@@ -102,6 +102,8 @@ extension Renderer {
         case updateAudibleOptions(AvailableMediaOptions)
         case updateLegibleOptions(AvailableMediaOptions)
         case startDiscoveringMediaOptions
+        case didStartSeek
+        case didStopSeek
         
         public struct MediaSelectionGroup {
             public let selectedOption: AVMediaSelectionOption?

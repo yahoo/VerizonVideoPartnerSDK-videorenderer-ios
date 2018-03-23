@@ -184,7 +184,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0910;
-				ORGANIZATIONNAME = "Copyright 2018, Oath Inc.";
+				ORGANIZATIONNAME = "Oath Inc.";
 				TargetAttributes = {
 					DEA993831E83FE0600EB3B8A = {
 						CreatedOnToolsVersion = 8.2.1;

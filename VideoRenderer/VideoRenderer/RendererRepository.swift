@@ -6,7 +6,7 @@ import Foundation
 /*
  Repository responsibility is manage availability of different
  kind of renderers in the system. 
- Each renderer can be presented in a repository in a form of 
+ Each renderer can be presented in a repository in a form of
  `Descriptor` struct.
  Goal of descriptor is to represent renderer.
  Also repository can build renderer instance for given description.
@@ -50,6 +50,7 @@ extension Renderer {
         public var currentTime: CMTime?
         public var hasDuration: Bool
         public var pictureInPictureActive: Bool
+        public var isContentFullScreen: Bool
         public var allowsExternalPlayback: Bool
         public var audible: Option?
         public var legible: Option?
@@ -65,7 +66,8 @@ extension Renderer {
                     allowsExternalPlayback: Bool,
                     audible: Option?,
                     legible: Option?,
-                    isFinished: Bool) {
+                    isFinished: Bool,
+                    isContentFullScreen: Bool) {
             self.angles = angles
             self.content = content
             self.rate = rate
@@ -77,6 +79,7 @@ extension Renderer {
             self.audible = audible
             self.legible = legible
             self.isFinished = isFinished
+            self.isContentFullScreen = isContentFullScreen
         }
     }
 }
@@ -96,6 +99,7 @@ extension Renderer {
         case bufferedTimeUpdated(CMTime)
         case pictureInPictureStopped
         case pictureInPictureIsPossible(Bool)
+        case contentFullScreenToggled
         case externalPlaybackAllowance(Bool)
         case externalPlaybackPossible(Bool)
         case averageVideoBitrateUpdated(Double)

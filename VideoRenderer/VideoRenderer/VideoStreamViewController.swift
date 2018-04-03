@@ -34,18 +34,22 @@ class VideoStreamView: UIView {
         return track.naturalSize
     }
     
-    var resizeOptions = ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true) {
+    var resizeOptions = ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true, resizeAspectFill: false) {
         didSet {
-            guard let size = naturalSize else { return }
-            
-            playerLayer?.videoGravity =
-                resizeOptions.videoGravity(for: size, in: bounds.size)
+            if resizeOptions.resizeAspectFill {
+                playerLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+            } else {
+                let size = naturalSize ?? CGSize.zero
+                playerLayer?.videoGravity =
+                    resizeOptions.videoGravity(for: size, in: bounds.size)
+            }
         }
     }
     
     struct ResizeOptions {
         let allowVerticalBars: Bool
         let allowHorizontalBars: Bool
+        let resizeAspectFill: Bool
         
         func videoGravity(for videoSize: CGSize, in hostSize: CGSize) -> String {
             let videoAspectRatio = videoSize.width / videoSize.height
@@ -264,6 +268,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             if currentPlayer.rate != props.rate {
                 currentPlayer.rate = props.rate
             }
+            
+            videoView?.resizeOptions = VideoStreamView.ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true, resizeAspectFill: props.isContentFullScreen)
             
             #if os(iOS)
                 if #available(iOS 9.0, *),

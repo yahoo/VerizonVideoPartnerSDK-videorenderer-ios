@@ -8,10 +8,10 @@ import AVFoundation
 class VideoGravityTests: XCTestCase {
     func testVideoGravityDimensionsResize() {
         typealias Resize = VideoStreamView.ResizeOptions
-        let vertical = Resize(allowVerticalBars: true, allowHorizontalBars: false)
-        let horizontal = Resize(allowVerticalBars: false, allowHorizontalBars: true)
-        let both = Resize(allowVerticalBars: true, allowHorizontalBars: true)
-        let none = Resize(allowVerticalBars: false, allowHorizontalBars: false)
+        let vertical = Resize(allowVerticalBars: true, allowHorizontalBars: false, resizeAspectFill: false)
+        let horizontal = Resize(allowVerticalBars: false, allowHorizontalBars: true, resizeAspectFill: false)
+        let both = Resize(allowVerticalBars: true, allowHorizontalBars: true, resizeAspectFill: false)
+        let none = Resize(allowVerticalBars: false, allowHorizontalBars: false, resizeAspectFill: false)
         
         let videoSize = CGSize(width: 800, height: 600)
         let landscapeSize = CGSize(width: 480, height: 320)

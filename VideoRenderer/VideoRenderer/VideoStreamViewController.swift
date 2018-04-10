@@ -33,40 +33,6 @@ class VideoStreamView: UIView {
         
         return track.naturalSize
     }
-    
-    var resizeOptions = ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true, resizeAspectFill: false) {
-        didSet {
-            if resizeOptions.resizeAspectFill {
-                playerLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
-            } else {
-                let size = naturalSize ?? CGSize.zero
-                playerLayer?.videoGravity =
-                    resizeOptions.videoGravity(for: size, in: bounds.size)
-            }
-        }
-    }
-    
-    struct ResizeOptions {
-        let allowVerticalBars: Bool
-        let allowHorizontalBars: Bool
-        let resizeAspectFill: Bool
-        
-        func videoGravity(for videoSize: CGSize, in hostSize: CGSize) -> String {
-            let videoAspectRatio = videoSize.width / videoSize.height
-            let hostAspectRatio = hostSize.width / hostSize.height
-            
-            switch (allowVerticalBars, allowHorizontalBars) {
-            case (false, false): return AVLayerVideoGravityResize
-            case (true, true): return AVLayerVideoGravityResizeAspect
-            case (true, false): return hostAspectRatio < videoAspectRatio
-                ? AVLayerVideoGravityResize
-                : AVLayerVideoGravityResizeAspect
-            case (false, true): return hostAspectRatio > videoAspectRatio
-                ? AVLayerVideoGravityResize
-                : AVLayerVideoGravityResizeAspect
-            }
-        }
-    }
 }
 
 extension Renderer.Descriptor {
@@ -269,7 +235,18 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 currentPlayer.rate = props.rate
             }
             
-            videoView?.resizeOptions = VideoStreamView.ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true, resizeAspectFill: props.isContentFullScreen)
+            func changeVideoGravity(to gravity: ResizeOptions) -> String {
+                switch gravity {
+                case .resize:
+                    return AVLayerVideoGravityResize
+                case .resizeAspect:
+                    return AVLayerVideoGravityResizeAspect
+                case .resizeAspectFill:
+                    return AVLayerVideoGravityResizeAspectFill
+                }
+            }
+            
+            videoView?.playerLayer?.videoGravity = changeVideoGravity(to: props.videoResizeOptions)
             
             #if os(iOS)
                 if #available(iOS 9.0, *),

@@ -16,6 +16,12 @@ extension UUIDPhantom {
     }
 }
 
+public enum ResizeOptions {
+    case resize
+    case resizeAspect
+    case resizeAspectFill
+}
+
 public struct AvailableMediaOptions {
     public struct Option: UUIDPhantom {
         public let uuid: UUID

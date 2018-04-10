@@ -50,7 +50,7 @@ extension Renderer {
         public var currentTime: CMTime?
         public var hasDuration: Bool
         public var pictureInPictureActive: Bool
-        public var isContentFullScreen: Bool
+        public var videoResizeOptions: ResizeOptions
         public var allowsExternalPlayback: Bool
         public var audible: Option?
         public var legible: Option?
@@ -67,7 +67,7 @@ extension Renderer {
                     audible: Option?,
                     legible: Option?,
                     isFinished: Bool,
-                    isContentFullScreen: Bool) {
+                    videoResizeOptions: ResizeOptions) {
             self.angles = angles
             self.content = content
             self.rate = rate
@@ -79,7 +79,7 @@ extension Renderer {
             self.audible = audible
             self.legible = legible
             self.isFinished = isFinished
-            self.isContentFullScreen = isContentFullScreen
+            self.videoResizeOptions = videoResizeOptions
         }
     }
 }

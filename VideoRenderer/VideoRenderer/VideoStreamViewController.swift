@@ -98,6 +98,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 seekerController = nil
                 mediaCharacteristicRenderer.props = nil
                 
+                videoView?.playerLayer?.videoGravity = AVLayerVideoGravityResizeAspect
                 return
             }
             
@@ -196,6 +197,17 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             mediaCharacteristicRenderer.props?.selectedLegibleOption = props.legible
             mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
             
+            videoView?.playerLayer?.videoGravity = {
+                switch props.videoResizeOptions {
+                case .resize:
+                    return AVLayerVideoGravityResize
+                case .resizeAspect:
+                    return AVLayerVideoGravityResizeAspect
+                case .resizeAspectFill:
+                    return AVLayerVideoGravityResizeAspectFill
+                }
+            }()
+            
             if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
                 currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback
             }
@@ -234,19 +246,6 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             if currentPlayer.rate != props.rate {
                 currentPlayer.rate = props.rate
             }
-            
-            func changeVideoGravity(to gravity: ResizeOptions) -> String {
-                switch gravity {
-                case .resize:
-                    return AVLayerVideoGravityResize
-                case .resizeAspect:
-                    return AVLayerVideoGravityResizeAspect
-                case .resizeAspectFill:
-                    return AVLayerVideoGravityResizeAspectFill
-                }
-            }
-            
-            videoView?.playerLayer?.videoGravity = changeVideoGravity(to: props.videoResizeOptions)
             
             #if os(iOS)
                 if #available(iOS 9.0, *),

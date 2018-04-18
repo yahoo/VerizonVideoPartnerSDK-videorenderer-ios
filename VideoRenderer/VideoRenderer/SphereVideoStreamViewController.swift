@@ -180,6 +180,8 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 })
             }
             
+            currentPlayer.allowsExternalPlayback = false
+            
             currentPlayer.isMuted = props.isMuted
             
             if currentPlayer.rate != props.rate {

@@ -18,7 +18,6 @@
 		DEA993BD1E83FF1D00EB3B8A /* SphereView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BA1E83FF1D00EB3B8A /* SphereView.swift */; };
 		DEA993BE1E83FF1D00EB3B8A /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BB1E83FF1D00EB3B8A /* Camera.swift */; };
 		DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */; };
-		DEA993C01E83FF5300EB3B8A /* VideoGravityStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */; };
 		DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993C11E83FF8200EB3B8A /* Action.swift */; };
 		DED8F33A1FBB34E1005BA836 /* MediaCharacteristicRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */; };
 		FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */; };
@@ -45,7 +44,6 @@
 		DEA993941E83FE0600EB3B8A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerModel.swift; sourceTree = "<group>"; };
 		DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerObserver.swift; sourceTree = "<group>"; };
-		DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoGravityStrategyTests.swift; sourceTree = "<group>"; };
 		DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoStreamViewController.swift; sourceTree = "<group>"; };
 		DEA993B51E83FF0900EB3B8A /* SeekerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeekerController.swift; sourceTree = "<group>"; };
 		DEA993B61E83FF0900EB3B8A /* ContentRendererViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentRendererViewController.swift; sourceTree = "<group>"; };
@@ -102,7 +100,6 @@
 				DEA993C11E83FF8200EB3B8A /* Action.swift */,
 				DEA993AB1E83FEF300EB3B8A /* SystemPlayerModel.swift */,
 				DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */,
-				DEA993AE1E83FEF300EB3B8A /* VideoGravityStrategyTests.swift */,
 				DEA993871E83FE0600EB3B8A /* VideoRenderer.h */,
 				DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */,
 				DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */,
@@ -257,7 +254,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEA993C01E83FF5300EB3B8A /* VideoGravityStrategyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

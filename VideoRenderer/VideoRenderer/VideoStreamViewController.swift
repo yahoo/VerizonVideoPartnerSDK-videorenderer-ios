@@ -33,36 +33,6 @@ class VideoStreamView: UIView {
         
         return track.naturalSize
     }
-    
-    var resizeOptions = ResizeOptions(allowVerticalBars: true, allowHorizontalBars: true) {
-        didSet {
-            guard let size = naturalSize else { return }
-            
-            playerLayer?.videoGravity =
-                resizeOptions.videoGravity(for: size, in: bounds.size)
-        }
-    }
-    
-    struct ResizeOptions {
-        let allowVerticalBars: Bool
-        let allowHorizontalBars: Bool
-        
-        func videoGravity(for videoSize: CGSize, in hostSize: CGSize) -> String {
-            let videoAspectRatio = videoSize.width / videoSize.height
-            let hostAspectRatio = hostSize.width / hostSize.height
-            
-            switch (allowVerticalBars, allowHorizontalBars) {
-            case (false, false): return AVLayerVideoGravityResize
-            case (true, true): return AVLayerVideoGravityResizeAspect
-            case (true, false): return hostAspectRatio < videoAspectRatio
-                ? AVLayerVideoGravityResize
-                : AVLayerVideoGravityResizeAspect
-            case (false, true): return hostAspectRatio > videoAspectRatio
-                ? AVLayerVideoGravityResize
-                : AVLayerVideoGravityResizeAspect
-            }
-        }
-    }
 }
 
 extension Renderer.Descriptor {
@@ -128,6 +98,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 seekerController = nil
                 mediaCharacteristicRenderer.props = nil
                 
+                videoView?.playerLayer?.videoGravity = AVLayerVideoGravityResizeAspect
                 return
             }
             
@@ -225,6 +196,17 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
     
             mediaCharacteristicRenderer.props?.selectedLegibleOption = props.legible
             mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
+            
+            videoView?.playerLayer?.videoGravity = {
+                switch props.videoResizeOptions {
+                case .resize:
+                    return AVLayerVideoGravityResize
+                case .resizeAspect:
+                    return AVLayerVideoGravityResizeAspect
+                case .resizeAspectFill:
+                    return AVLayerVideoGravityResizeAspectFill
+                }
+            }()
             
             if currentPlayer.allowsExternalPlayback != props.allowsExternalPlayback {
                 currentPlayer.allowsExternalPlayback = props.allowsExternalPlayback

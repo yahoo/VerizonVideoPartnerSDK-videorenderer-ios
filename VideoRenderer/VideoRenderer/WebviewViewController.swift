@@ -2,6 +2,7 @@
 //  Licensed under the terms of the MIT License. See LICENSE.md file in project root for terms.
 
 import Foundation
+import WebKit
 
 extension Renderer.Descriptor {
     public static let webview = try! Renderer.Descriptor(
@@ -12,8 +13,7 @@ extension Renderer.Descriptor {
 public final class WebviewViewController: UIViewController, RendererProtocol {
     public static let renderer = Renderer(
         descriptor: .webview,
-        provider: { WebviewViewController() }
-    )
+        provider: { WebviewViewController() })
     
     public var dispatch: Renderer.Dispatch?
     
@@ -23,4 +23,13 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         }
     }
     
+    public override func loadView() {
+        let config = WKWebViewConfiguration()
+        config.allowsInlineMediaPlayback = false
+        config.allowsAirPlayForMediaPlayback = false
+        config.allowsPictureInPictureMediaPlayback = false
+        
+        let webview = WKWebView(frame: .zero, configuration: config)
+        view = webview
+    }
 }

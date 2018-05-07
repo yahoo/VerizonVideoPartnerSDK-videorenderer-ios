@@ -29,7 +29,6 @@ extension RendererProtocol where Self: UIViewController {
 public struct Renderer {
     public typealias Provider = () -> RendererProtocol
     
-
     public let descriptor: Descriptor
     public let provider: Provider
     

@@ -42,7 +42,6 @@ extension Renderer.Descriptor {
     )
 }
 
-
 public final class VideoStreamViewController: UIViewController, RendererProtocol {
     public static let renderer = Renderer(
         descriptor: .flat,

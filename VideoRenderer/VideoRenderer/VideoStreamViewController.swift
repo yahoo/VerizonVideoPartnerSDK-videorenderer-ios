@@ -4,7 +4,7 @@
 import AVFoundation
 import AVKit
 
-class VideoStreamView: UIView {
+final class VideoStreamView: UIView {
     /// `AVPlayerLayer` class is returned as view backing layer.
     override class var layerClass: AnyClass {
         return AVPlayerLayer.self

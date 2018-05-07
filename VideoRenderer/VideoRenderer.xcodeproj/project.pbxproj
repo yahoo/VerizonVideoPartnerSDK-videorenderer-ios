@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		509C697F20A06527007538CA /* WebviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509C697E20A06527007538CA /* WebviewViewController.swift */; };
 		DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE67433C1E8C354F006FCFFC /* RendererRepository.swift */; };
 		DEA9938E1E83FE0600EB3B8A /* VideoRenderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA993841E83FE0600EB3B8A /* VideoRenderer.framework */; };
 		DEA993951E83FE0600EB3B8A /* VideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = DEA993871E83FE0600EB3B8A /* VideoRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		509C697E20A06527007538CA /* WebviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebviewViewController.swift; sourceTree = "<group>"; };
 		DE5B53B41E897C730036C17B /* Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Framework.xcconfig; sourceTree = "<group>"; };
 		DE5B53B51E897C840036C17B /* Tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
 		DE67433C1E8C354F006FCFFC /* RendererRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RendererRepository.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				DEA993881E83FE0600EB3B8A /* Info.plist */,
 				DE67433C1E8C354F006FCFFC /* RendererRepository.swift */,
 				FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */,
+				509C697E20A06527007538CA /* WebviewViewController.swift */,
 			);
 			path = VideoRenderer;
 			sourceTree = "<group>";
@@ -240,6 +243,7 @@
 				FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */,
 				DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */,
 				DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */,
+				509C697F20A06527007538CA /* WebviewViewController.swift in Sources */,
 				DEA993B21E83FEF300EB3B8A /* SystemPlayerObserver.swift in Sources */,
 				DEA993BE1E83FF1D00EB3B8A /* Camera.swift in Sources */,
 				DEA993BD1E83FF1D00EB3B8A /* SphereView.swift in Sources */,

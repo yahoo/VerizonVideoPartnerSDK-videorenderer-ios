@@ -162,6 +162,7 @@ extension Renderer {
             // it is the only one that should be registered for tvOS.
             #if os(iOS)
             register(renderer: SphereVideoStreamViewController.renderer)
+            register(renderer: WebviewViewController.renderer)
             #endif
         }
         

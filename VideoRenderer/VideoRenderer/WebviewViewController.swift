@@ -17,19 +17,47 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
     
     public var dispatch: Renderer.Dispatch?
     
+    private var webview: WKWebView? {
+        return view as? WKWebView
+    }
+    
+    private var isLoaded = false
+    
     public var props: Renderer.Props? {
         didSet {
+            guard let props = props else { webview?.stopLoading(); return }
+            if !isLoaded && webview?.isLoading == false {
+                isLoaded = true
+                let js = "updateVideoTagWithSrc('\(props.content.absoluteString)')"
+                webview?.evaluateJavaScript(js) { (object, error) in
+                    print(object ?? "")
+                    print(error ?? "")
+                }
+            }
             
+            if webview?.isLoading == false && props.rate == 1.0 {
+                webview?.evaluateJavaScript("playVideo()") { (object, error) in
+                    print(object ?? "")
+                    print(error ?? "")
+                }
+            }
         }
     }
     
     public override func loadView() {
         let config = WKWebViewConfiguration()
-        config.allowsInlineMediaPlayback = false
+        config.allowsInlineMediaPlayback = true
         config.allowsAirPlayForMediaPlayback = false
         config.allowsPictureInPictureMediaPlayback = false
         
         let webview = WKWebView(frame: .zero, configuration: config)
-        view = webview
+        webview.backgroundColor = .black
+        webview.scrollView.backgroundColor = .black
+        defer { view = webview }
+        
+        let bundle = Bundle(for: type(of: self))
+        guard let url = bundle.url(forResource: "video-tag", withExtension: "html") else { return }
+        guard let html = try? String(contentsOf: url) else { return }
+        webview.loadHTMLString(html, baseURL: bundle.resourceURL)
     }
 }

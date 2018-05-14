@@ -1,14 +1,19 @@
-function getVideoTag() {
-    const videos = document.getElementsByTagName('video')
-    return videos.item(0)
+var videos = document.getElementsByTagName('video')
+var videoTag = videos.item(0)
+
+videoTag.ondurationchange = function () {
+    window.webkit.messageHandlers.observer.postMessage({ 
+        body: {
+            "name" : "durationChanged",
+            "value" : videoTag.duration
+        }
+    })
 }
 
 function updateVideoTagWithSrc(src) {
-    const videoTag = getVideoTag()
     videoTag.src = src
 }
 
 function playVideo() {
-    const videoTag = getVideoTag()
     videoTag.play();
 }

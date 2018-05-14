@@ -41,6 +41,13 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
                     print(error ?? "")
                 }
             }
+            
+            if webview?.isLoading == false && props.hasDuration == false {
+                webview?.evaluateJavaScript("getDuration()") { (object, error) in
+                    print(object ?? "")
+                    print(error ?? "")
+                }
+            }
         }
     }
     
@@ -49,6 +56,10 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         config.allowsInlineMediaPlayback = true
         config.allowsAirPlayForMediaPlayback = false
         config.allowsPictureInPictureMediaPlayback = false
+        
+        let userController = WKUserContentController()
+        userController.add(VideoTagMessageHandler(dispatcher: { _ in }), name: "observer")
+        config.userContentController = userController
         
         let webview = WKWebView(frame: .zero, configuration: config)
         webview.backgroundColor = .black
@@ -59,5 +70,22 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         guard let url = bundle.url(forResource: "video-tag", withExtension: "html") else { return }
         guard let html = try? String(contentsOf: url) else { return }
         webview.loadHTMLString(html, baseURL: bundle.resourceURL)
+    }
+}
+
+final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
+    enum Event {
+        case duration(Float)
+    }
+    
+    let dispatcher: (Event) -> ()
+    
+    init(dispatcher: @escaping (Event) -> ()) {
+        self.dispatcher = dispatcher
+        super.init()
+    }
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "observer" else { return }
+        print(message.body)
     }
 }

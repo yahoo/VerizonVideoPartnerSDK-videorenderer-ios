@@ -80,19 +80,31 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         let userController = WKUserContentController()
         userController.add(VideoTagMessageHandler(dispatcher: { [weak self] event in
             switch event {
-            case .currentTime(let currentTime):
-                self?.dispatch?(.currentTimeUpdated(currentTime))
-            case .duration(let duration):
-                self?.dispatch?(.durationReceived(duration))
-            case .playbackFinished:
-                self?.dispatch?(.playbackFinished)
-            case .playbackReady:
+            case .AdLoaded:
                 self?.dispatch?(.playbackReady)
-            case .playbackError(let error):
-                let error = NSError(domain: "webViewPlaybackError", code: Int(error))
-                self?.dispatch?(.playbackFailed(error))
-            case .playbackRateChanged(let rate):
-                self?.dispatch?(.didChangeRate(Float(rate)))
+            case .AdPaused:
+                return
+            case .AdStarted:
+                return
+            case .AdSkipped:
+                return
+            case .AdStopped:
+                return
+            case .AdRemainingTimeChange(let currentTime):
+                self?.dispatch?(.currentTimeUpdated(currentTime))
+            case .AdDurationChange(let duration):
+                self?.dispatch?(.durationReceived(duration))
+            case .AdVideoFirstQuartile:
+                return
+            case .AdVideoMidPoint:
+                return
+            case .AdVideoThirdQuartile:
+                return
+            case .AdVideoComplete:
+                self?.dispatch?(.playbackFinished)
+            case .AdError:
+                self?.dispatch?(.playbackFailed(NSError()))
+            default: return
             }
         }), name: "observer")
         config.userContentController = userController
@@ -111,12 +123,20 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
 
 final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
     enum Event {
-        case currentTime(CMTime)
-        case duration(CMTime)
-        case playbackError(Double)
-        case playbackFinished
-        case playbackReady
-        case playbackRateChanged(Double)
+        case AdRemainingTimeChange(CMTime)
+        case AdDurationChange(CMTime)
+        case AdLoaded
+        case AdStarted
+        case AdStopped
+        case AdSkipped
+        case AdPaused
+        case AdSizeChange
+        case AdVideoFirstQuartile
+        case AdVideoMidPoint
+        case AdVideoThirdQuartile
+        case AdVideoComplete
+        case AdClickThru
+        case AdError
     }
     
     let dispatcher: (Event) -> ()
@@ -132,22 +152,32 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         let decoder = JSONDecoder()
         guard let result = try? decoder.decode(WebKitMessage.self, from: data) else { return }
         switch result.name {
-        case "durationChanged":
-            guard let value = result.value else { return }
-            dispatcher(.duration(CMTime(seconds: value, preferredTimescale: 600)))
-        case "currentTimeChanged":
-            guard let value = result.value else { return }
-            dispatcher(.currentTime(CMTime(seconds: value, preferredTimescale: 600)))
-        case "playbackReady":
-            dispatcher(.playbackReady)
-        case "playbackFinished":
-            dispatcher(.playbackFinished)
-        case "playbackError":
-            guard let value = result.value else { return }
-            dispatcher(.playbackError(value))
-        case "playbackRate":
-            guard let value = result.value else { return }
-            dispatcher(.playbackRateChanged(value))
+        case "AdDurationChange":
+            return
+        case "AdRemainingTimeChange":
+            return
+        case "AdLoaded":
+            return
+        case "AdStarted":
+            return
+        case "AdStopped":
+            return
+        case "AdSkipped":
+            return
+        case "AdPaused":
+            return
+        case "AdVideoFirstQuartile":
+            return
+        case "AdVideoMidPoint":
+            return
+        case "AdVideoThirdQuartile":
+            return
+        case "AdVideoComplete":
+            return
+        case "AdError":
+            return
+        case "AdSizeChange":
+            return
         default: return
         }
     }

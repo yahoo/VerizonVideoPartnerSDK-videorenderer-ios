@@ -3,6 +3,7 @@
 
 import Foundation
 import WebKit
+import CoreMedia
 
 extension Renderer.Descriptor {
     public static let webview = try! Renderer.Descriptor(
@@ -30,22 +31,41 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
                 isLoaded = true
                 let js = "updateVideoTagWithSrc('\(props.content.absoluteString)')"
                 webview?.evaluateJavaScript(js) { (object, error) in
-                    print(object ?? "")
-                    print(error ?? "")
+                    if let error = error {
+                        print(error)
+                    }
+                }
+            }
+            if webview?.isLoading == false {
+                let js = props.isMuted ? "mute()" : "unmute()"
+                webview?.evaluateJavaScript(js) { (object, error) in
+                    if let error = error {
+                        print(error)
+                    }
+                }
+            }
+            if webview?.isLoading == false && props.isFinished {
+                let js = "finishPlayback()"
+                webview?.evaluateJavaScript(js) { (object, error) in
+                    if let error = error {
+                        print(error)
+                    }
                 }
             }
             
             if webview?.isLoading == false && props.rate == 1.0 {
                 webview?.evaluateJavaScript("playVideo()") { (object, error) in
-                    print(object ?? "")
-                    print(error ?? "")
+                    if let error = error {
+                        print(error)
+                    }
                 }
             }
             
-            if webview?.isLoading == false && props.hasDuration == false {
-                webview?.evaluateJavaScript("getDuration()") { (object, error) in
-                    print(object ?? "")
-                    print(error ?? "")
+            if webview?.isLoading == false && props.rate == 0.0 {
+                webview?.evaluateJavaScript("pauseVideo()") { (object, error) in
+                    if let error = error {
+                        print(error)
+                    }
                 }
             }
         }
@@ -58,7 +78,23 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         config.allowsPictureInPictureMediaPlayback = false
         
         let userController = WKUserContentController()
-        userController.add(VideoTagMessageHandler(dispatcher: { _ in }), name: "observer")
+        userController.add(VideoTagMessageHandler(dispatcher: { [weak self] event in
+            switch event {
+            case .currentTime(let currentTime):
+                self?.dispatch?(.currentTimeUpdated(currentTime))
+            case .duration(let duration):
+                self?.dispatch?(.durationReceived(duration))
+            case .playbackFinished:
+                self?.dispatch?(.playbackFinished)
+            case .playbackReady:
+                self?.dispatch?(.playbackReady)
+            case .playbackError(let error):
+                let error = NSError(domain: "webViewPlaybackError", code: Int(error))
+                self?.dispatch?(.playbackFailed(error))
+            case .playbackRateChanged(let rate):
+                self?.dispatch?(.didChangeRate(Float(rate)))
+            }
+        }), name: "observer")
         config.userContentController = userController
         
         let webview = WKWebView(frame: .zero, configuration: config)
@@ -75,7 +111,12 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
 
 final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
     enum Event {
-        case duration(Float)
+        case currentTime(CMTime)
+        case duration(CMTime)
+        case playbackError(Double)
+        case playbackFinished
+        case playbackReady
+        case playbackRateChanged(Double)
     }
     
     let dispatcher: (Event) -> ()
@@ -86,6 +127,28 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
     }
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == "observer" else { return }
-        print(message.body)
+        guard let body = message.body as? String else { return }
+        guard let data = body.data(using: .utf8) else { return }
+        let decoder = JSONDecoder()
+        guard let result = try? decoder.decode(WebKitMessage.self, from: data) else { return }
+        switch result.name {
+        case "durationChanged":
+            guard let value = result.value else { return }
+            dispatcher(.duration(CMTime(seconds: value, preferredTimescale: 600)))
+        case "currentTimeChanged":
+            guard let value = result.value else { return }
+            dispatcher(.currentTime(CMTime(seconds: value, preferredTimescale: 600)))
+        case "playbackReady":
+            dispatcher(.playbackReady)
+        case "playbackFinished":
+            dispatcher(.playbackFinished)
+        case "playbackError":
+            guard let value = result.value else { return }
+            dispatcher(.playbackError(value))
+        case "playbackRate":
+            guard let value = result.value else { return }
+            dispatcher(.playbackRateChanged(value))
+        default: return
+        }
     }
 }

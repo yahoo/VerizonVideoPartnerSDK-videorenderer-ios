@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		064E091020BDA95E00EA1496 /* WebKitMessageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064E090F20BDA95E00EA1496 /* WebKitMessageParser.swift */; };
 		509C697F20A06527007538CA /* WebviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509C697E20A06527007538CA /* WebviewViewController.swift */; };
 		509C699120A097FC007538CA /* video-tag.html in Resources */ = {isa = PBXBuildFile; fileRef = 509C699020A097FC007538CA /* video-tag.html */; };
 		509C699320A09C5E007538CA /* controller.js in Resources */ = {isa = PBXBuildFile; fileRef = 509C699220A09C5E007538CA /* controller.js */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		064E090F20BDA95E00EA1496 /* WebKitMessageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebKitMessageParser.swift; sourceTree = "<group>"; };
 		509C697E20A06527007538CA /* WebviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebviewViewController.swift; sourceTree = "<group>"; };
 		509C699020A097FC007538CA /* video-tag.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "video-tag.html"; sourceTree = "<group>"; };
 		509C699220A09C5E007538CA /* controller.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = controller.js; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				DE67433C1E8C354F006FCFFC /* RendererRepository.swift */,
 				FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */,
 				509C697E20A06527007538CA /* WebviewViewController.swift */,
+				064E090F20BDA95E00EA1496 /* WebKitMessageParser.swift */,
 				509C699020A097FC007538CA /* video-tag.html */,
 				509C699220A09C5E007538CA /* controller.js */,
 			);
@@ -248,6 +251,7 @@
 			files = (
 				DEA993C21E83FF8200EB3B8A /* Action.swift in Sources */,
 				DE67433D1E8C354F006FCFFC /* RendererRepository.swift in Sources */,
+				064E091020BDA95E00EA1496 /* WebKitMessageParser.swift in Sources */,
 				FEBAC92A1F1666D00012E519 /* PictureInPictureControllerObserver.swift in Sources */,
 				DEA993B01E83FEF300EB3B8A /* SystemPlayerModel.swift in Sources */,
 				DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */,

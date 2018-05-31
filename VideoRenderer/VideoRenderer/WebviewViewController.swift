@@ -29,45 +29,57 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             guard let props = props else { webview?.stopLoading(); return }
             if !isLoaded && webview?.isLoading == false {
                 isLoaded = true
-                let js = "updateVideoTagWithSrc('\(props.content.absoluteString)')"
+                let js = "initAd()"
                 webview?.evaluateJavaScript(js) { (object, error) in
                     if let error = error {
                         print(error)
                     }
-                }
-            }
-            if webview?.isLoading == false {
-                let js = props.isMuted ? "mute()" : "unmute()"
-                webview?.evaluateJavaScript(js) { (object, error) in
-                    if let error = error {
-                        print(error)
+                    if let object = object {
+                        print(object)
                     }
                 }
             }
-            if webview?.isLoading == false && props.isFinished {
-                let js = "finishPlayback()"
-                webview?.evaluateJavaScript(js) { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
-            
-            if webview?.isLoading == false && props.rate == 1.0 {
-                webview?.evaluateJavaScript("playVideo()") { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
-            
-            if webview?.isLoading == false && props.rate == 0.0 {
-                webview?.evaluateJavaScript("pauseVideo()") { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
+//            if !isLoaded && webview?.isLoading == false {
+//                isLoaded = true
+//                let js = "updateVideoTagWithSrc('\(props.content.absoluteString)')"
+//                webview?.evaluateJavaScript(js) { (object, error) in
+//                    if let error = error {
+//                        print(error)
+//                    }
+//                }
+//            }
+//            if webview?.isLoading == false {
+//                let js = props.isMuted ? "mute()" : "unmute()"
+//                webview?.evaluateJavaScript(js) { (object, error) in
+//                    if let error = error {
+//                        print(error)
+//                    }
+//                }
+//            }
+//            if webview?.isLoading == false && props.isFinished {
+//                let js = "finishPlayback()"
+//                webview?.evaluateJavaScript(js) { (object, error) in
+//                    if let error = error {
+//                        print(error)
+//                    }
+//                }
+//            }
+//
+//            if webview?.isLoading == false && props.rate == 1.0 {
+//                webview?.evaluateJavaScript("playVideo()") { (object, error) in
+//                    if let error = error {
+//                        print(error)
+//                    }
+//                }
+//            }
+//
+//            if webview?.isLoading == false && props.rate == 0.0 {
+//                webview?.evaluateJavaScript("pauseVideo()") { (object, error) in
+//                    if let error = error {
+//                        print(error)
+//                    }
+//                }
+//            }
         }
     }
     

@@ -28,58 +28,46 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         didSet {
             guard let props = props else { webview?.stopLoading(); return }
             if !isLoaded && webview?.isLoading == false {
-                isLoaded = true
-                let js = "initAd()"
+                webview?.evaluateJavaScript("initAd()") { [weak self] (object, error) in
+                    guard let object = object as? String else { return }
+                    self?.dispatch?(.playbackFailed(NSError(domain: object, code: 0, userInfo: nil)))
+                    self?.isLoaded = true
+                }
+                guard isLoaded else { return }
+                webview?.evaluateJavaScript("subscribe()") { _ in }
+                webview?.evaluateJavaScript("startAd()") { _ in }
+            }
+            if isLoaded && webview?.isLoading == false {
+                let js = props.isMuted ? "mute()" : "unmute()"
                 webview?.evaluateJavaScript(js) { (object, error) in
                     if let error = error {
                         print(error)
                     }
-                    if let object = object {
-                        print(object)
+                }
+            }
+            if isLoaded && webview?.isLoading == false && props.isFinished {
+                webview?.evaluateJavaScript("finishPlayback()") { (object, error) in
+                    if let error = error {
+                        print(error)
                     }
                 }
             }
-//            if !isLoaded && webview?.isLoading == false {
-//                isLoaded = true
-//                let js = "updateVideoTagWithSrc('\(props.content.absoluteString)')"
-//                webview?.evaluateJavaScript(js) { (object, error) in
-//                    if let error = error {
-//                        print(error)
-//                    }
-//                }
-//            }
-//            if webview?.isLoading == false {
-//                let js = props.isMuted ? "mute()" : "unmute()"
-//                webview?.evaluateJavaScript(js) { (object, error) in
-//                    if let error = error {
-//                        print(error)
-//                    }
-//                }
-//            }
-//            if webview?.isLoading == false && props.isFinished {
-//                let js = "finishPlayback()"
-//                webview?.evaluateJavaScript(js) { (object, error) in
-//                    if let error = error {
-//                        print(error)
-//                    }
-//                }
-//            }
-//
-//            if webview?.isLoading == false && props.rate == 1.0 {
-//                webview?.evaluateJavaScript("playVideo()") { (object, error) in
-//                    if let error = error {
-//                        print(error)
-//                    }
-//                }
-//            }
-//
-//            if webview?.isLoading == false && props.rate == 0.0 {
-//                webview?.evaluateJavaScript("pauseVideo()") { (object, error) in
-//                    if let error = error {
-//                        print(error)
-//                    }
-//                }
-//            }
+
+            if isLoaded && webview?.isLoading == false && props.rate == 1.0 {
+                webview?.evaluateJavaScript("resumeAd()") { (object, error) in
+                    if let error = error {
+                        print(error)
+                    }
+                }
+            }
+
+            if isLoaded && webview?.isLoading == false && props.rate == 0.0 {
+                webview?.evaluateJavaScript("pauseAd()") { (object, error) in
+                    if let error = error {
+                        print(error)
+                    }
+                }
+            }
         }
     }
     
@@ -88,24 +76,25 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         config.allowsInlineMediaPlayback = true
         config.allowsAirPlayForMediaPlayback = false
         config.allowsPictureInPictureMediaPlayback = false
-        
         let userController = WKUserContentController()
         userController.add(VideoTagMessageHandler(dispatcher: { [weak self] event in
             switch event {
             case .AdLoaded:
                 self?.dispatch?(.playbackReady)
+            case .AdDurationChanged(let time):
+                self?.dispatch?(.durationReceived(time))
+            case .AdCurrentTimeChanged(let time):
+                self?.dispatch?(.currentTimeUpdated(time))
             case .AdPaused:
-                return
+                self?.dispatch?(.didChangeRate(0.0))
+            case .AdResumed:
+                self?.dispatch?(.didChangeRate(1.0))
             case .AdStarted:
                 return
             case .AdSkipped:
-                return
+                self?.dispatch?(.playbackFinished)
             case .AdStopped:
-                return
-            case .AdRemainingTimeChange(let currentTime):
-                self?.dispatch?(.currentTimeUpdated(currentTime))
-            case .AdDurationChange(let duration):
-                self?.dispatch?(.durationReceived(duration))
+                self?.dispatch?(.playbackFinished)
             case .AdVideoFirstQuartile:
                 return
             case .AdVideoMidPoint:
@@ -116,7 +105,10 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
                 self?.dispatch?(.playbackFinished)
             case .AdError:
                 self?.dispatch?(.playbackFailed(NSError()))
-            default: return
+            case .AdSizeChange:
+                return
+            case .AdClickThru:
+                return
             }
         }), name: "observer")
         config.userContentController = userController
@@ -135,20 +127,21 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
 
 final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
     enum Event {
-        case AdRemainingTimeChange(CMTime)
-        case AdDurationChange(CMTime)
+        case AdDurationChanged(CMTime)
+        case AdCurrentTimeChanged(CMTime)
         case AdLoaded
         case AdStarted
         case AdStopped
         case AdSkipped
         case AdPaused
+        case AdResumed
         case AdSizeChange
         case AdVideoFirstQuartile
         case AdVideoMidPoint
         case AdVideoThirdQuartile
         case AdVideoComplete
         case AdClickThru
-        case AdError
+        case AdError(String)
     }
     
     let dispatcher: (Event) -> ()
@@ -163,34 +156,45 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         guard let data = body.data(using: .utf8) else { return }
         let decoder = JSONDecoder()
         guard let result = try? decoder.decode(WebKitMessage.self, from: data) else { return }
+        print(result.name)
         switch result.name {
-        case "AdDurationChange":
-            return
-        case "AdRemainingTimeChange":
-            return
+        case "AdDurationChanged":
+            guard let value = result.value, let time = Double(value) else { return }
+            dispatcher(.AdDurationChanged(CMTime(seconds: time, preferredTimescale: 600)))
+        case "AdCurrentTimeChanged":
+            guard let value = result.value, let time = Double(value) else { return }
+            dispatcher(.AdCurrentTimeChanged(CMTime(seconds: time, preferredTimescale: 600)))
         case "AdLoaded":
-            return
+            dispatcher(.AdLoaded)
         case "AdStarted":
-            return
+            dispatcher(.AdStarted)
         case "AdStopped":
-            return
+            dispatcher(.AdStopped)
         case "AdSkipped":
-            return
+            dispatcher(.AdSkipped)
         case "AdPaused":
-            return
+            dispatcher(.AdPaused)
         case "AdVideoFirstQuartile":
-            return
+            dispatcher(.AdVideoFirstQuartile)
         case "AdVideoMidPoint":
-            return
+            dispatcher(.AdVideoMidPoint)
         case "AdVideoThirdQuartile":
-            return
+            dispatcher(.AdVideoThirdQuartile)
         case "AdVideoComplete":
-            return
+            dispatcher(.AdVideoComplete)
         case "AdError":
-            return
+            guard let value = result.value else { return }
+            dispatcher(.AdError(value))
         case "AdSizeChange":
-            return
+            dispatcher(.AdSizeChange)
+        case "AdClickThru":
+            dispatcher(.AdClickThru)
         default: return
         }
     }
+}
+
+struct WebKitMessage: Codable {
+    let name: String
+    let value: String?
 }

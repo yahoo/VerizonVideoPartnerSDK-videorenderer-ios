@@ -47,7 +47,7 @@ var VpaidVideoPlayer = function() {
         'icons' : '',
         'linear' : true,
         'remainingTime' : 10,
-        'skippableState' : false,
+        'skippableState' : true,
         'viewMode' : 'normal',
         'width' : 0,
         'volume' : 1.0
@@ -212,16 +212,18 @@ VpaidVideoPlayer.prototype.startAd = function() {
     this.slot_.appendChild(img);
     img.addEventListener('click', this.overlayOnClick_.bind(this), false);
     
-    //add a test mute button
-    var muteButton = document.createElement('input');
-    muteButton.setAttribute('type', 'button');
-    muteButton.setAttribute('value', 'mute/unMute');
+    //add a test skip button
+    var skippableState = this.attributes_['skippableState'];
+    if (skippableState) {
+        var skipButton = document.createElement('input');
+        skipButton.setAttribute('type', 'button');
+        skipButton.setAttribute('value', 'Skip');
     
-    muteButton.addEventListener('click',
-                                this.muteButtonOnClick_.bind(this),
+        skipButton.addEventListener('click',
+                                this.skipAd.bind(this),
                                 false);
-    this.slot_.appendChild(muteButton);
-    
+        this.slot_.appendChild(skipButton);
+    }
     this.callEvent_('AdStarted');
 };
 
@@ -341,6 +343,7 @@ VpaidVideoPlayer.prototype.skipAd = function() {
     this.log('skipAd');
     var skippableState = this.attributes_['skippableState'];
     if (skippableState) {
+        videoSlot_.stop()
         this.callEvent_('AdSkipped');
     }
 };
@@ -451,20 +454,6 @@ VpaidVideoPlayer.prototype.callEvent_ = function(eventType) {
     if (eventType in this.eventsCallbacks_) {
         this.eventsCallbacks_[eventType]();
     }
-};
-
-
-/**
- * Callback for when the mute button is clicked.
- * @private
- */
-VpaidVideoPlayer.prototype.muteButtonOnClick_ = function() {
-    if (this.attributes_['volume'] == 0) {
-        this.attributes_['volume'] = 1.0;
-    } else {
-        this.attributes_['volume'] = 0.0;
-    }
-    this.callEvent_('AdVolumeChange');
 };
 
 

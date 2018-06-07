@@ -29,9 +29,8 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             guard let props = props else { webview?.stopLoading(); return }
             if !isLoaded && webview?.isLoading == false {
                 webview?.evaluateJavaScript("initAd()") { [weak self] (object, error) in
-                    guard let object = object as? String else { return }
+                    guard let object = object as? String else { self?.isLoaded = true; return }
                     self?.dispatch?(.playbackFailed(NSError(domain: object, code: 0, userInfo: nil)))
-                    self?.isLoaded = true
                 }
                 guard isLoaded else { return }
                 webview?.evaluateJavaScript("subscribe()") { _ in }
@@ -102,7 +101,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             case .AdVideoThirdQuartile:
                 return
             case .AdVideoComplete:
-                self?.dispatch?(.playbackFinished)
+                return
             case .AdError:
                 self?.dispatch?(.playbackFailed(NSError()))
             case .AdSizeChange:

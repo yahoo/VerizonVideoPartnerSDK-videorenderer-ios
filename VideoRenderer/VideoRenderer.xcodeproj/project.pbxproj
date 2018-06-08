@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		064E092020BEC6A800EA1496 /* vpaid-mediafile-sample.js in Resources */ = {isa = PBXBuildFile; fileRef = 064E091F20BEC6A800EA1496 /* vpaid-mediafile-sample.js */; };
 		509C697F20A06527007538CA /* WebviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509C697E20A06527007538CA /* WebviewViewController.swift */; };
 		509C699120A097FC007538CA /* video-tag.html in Resources */ = {isa = PBXBuildFile; fileRef = 509C699020A097FC007538CA /* video-tag.html */; };
 		509C699320A09C5E007538CA /* controller.js in Resources */ = {isa = PBXBuildFile; fileRef = 509C699220A09C5E007538CA /* controller.js */; };
@@ -38,7 +37,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		064E091F20BEC6A800EA1496 /* vpaid-mediafile-sample.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "vpaid-mediafile-sample.js"; sourceTree = "<group>"; };
 		509C697E20A06527007538CA /* WebviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebviewViewController.swift; sourceTree = "<group>"; };
 		509C699020A097FC007538CA /* video-tag.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "video-tag.html"; sourceTree = "<group>"; };
 		509C699220A09C5E007538CA /* controller.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = controller.js; sourceTree = "<group>"; };
@@ -121,7 +119,6 @@
 				FEBAC9291F1666D00012E519 /* PictureInPictureControllerObserver.swift */,
 				509C697E20A06527007538CA /* WebviewViewController.swift */,
 				509C699020A097FC007538CA /* video-tag.html */,
-				064E091F20BEC6A800EA1496 /* vpaid-mediafile-sample.js */,
 				509C699220A09C5E007538CA /* controller.js */,
 			);
 			path = VideoRenderer;
@@ -231,7 +228,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				509C699320A09C5E007538CA /* controller.js in Resources */,
-				064E092020BEC6A800EA1496 /* vpaid-mediafile-sample.js in Resources */,
 				509C699120A097FC007538CA /* video-tag.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

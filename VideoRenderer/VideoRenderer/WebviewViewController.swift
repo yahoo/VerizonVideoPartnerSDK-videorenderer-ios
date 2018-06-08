@@ -23,48 +23,34 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
     }
     
     private var isLoaded = false
+    private var isPlaying = false
+    private var isVPAIDInitiated = false
     
     public var props: Renderer.Props? {
         didSet {
             guard let props = props else { webview?.stopLoading(); return }
             if !isLoaded && webview?.isLoading == false {
-                webview?.evaluateJavaScript("initAd()") { [weak self] (object, error) in
-                    guard let object = object as? String else { self?.isLoaded = true; return }
-                    self?.dispatch?(.playbackFailed(NSError(domain: object, code: 0, userInfo: nil)))
-                }
-                guard isLoaded else { return }
-                webview?.evaluateJavaScript("subscribe()") { _ in }
-                webview?.evaluateJavaScript("startAd()") { _ in }
+                isLoaded = true
+                let urlString = "https://s3.eu-west-2.amazonaws.com/aol-public/mobile-sdk-test-app/vpaid-mediafile-sample.js" //would be props.content
+                //initAd should take vpaid url and adParameters
+                webview?.evaluateJavaScript("initAd('\(urlString)')")
             }
-            if isLoaded && webview?.isLoading == false {
-                let js = props.isMuted ? "mute()" : "unmute()"
-                webview?.evaluateJavaScript(js) { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
-            if isLoaded && webview?.isLoading == false && props.isFinished {
-                webview?.evaluateJavaScript("finishPlayback()") { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
+            
+            guard isLoaded && isVPAIDInitiated && webview?.isLoading == false else { return }
+            
+            webview?.evaluateJavaScript(props.isMuted ? "mute()" : "unmute()")
+            
+            if props.isFinished { webview?.evaluateJavaScript("finishPlayback()") }
+
+            if props.rate == 1.0 && !isPlaying {
+                webview?.evaluateJavaScript("resumeAd()") { [weak self] (object, error) in
+                    if let error = error { print(error) } else { self?.isPlaying = true }
                 }
             }
 
-            if isLoaded && webview?.isLoading == false && props.rate == 1.0 {
-                webview?.evaluateJavaScript("resumeAd()") { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                }
-            }
-
-            if isLoaded && webview?.isLoading == false && props.rate == 0.0 {
-                webview?.evaluateJavaScript("pauseAd()") { (object, error) in
-                    if let error = error {
-                        print(error)
-                    }
+            if props.rate == 0.0 && isPlaying {
+                webview?.evaluateJavaScript("pauseAd()") { [weak self] (object, error) in
+                    if let error = error { print(error) } else { self?.isPlaying = false }
                 }
             }
         }
@@ -79,6 +65,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         userController.add(VideoTagMessageHandler(dispatcher: { [weak self] event in
             switch event {
             case .AdLoaded:
+                self?.isVPAIDInitiated = true
                 self?.dispatch?(.playbackReady)
             case .AdDurationChanged(let time):
                 self?.dispatch?(.durationReceived(time))
@@ -102,12 +89,14 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
                 return
             case .AdVideoComplete:
                 return
-            case .AdError:
-                self?.dispatch?(.playbackFailed(NSError()))
+            case .AdError(let error):
+                self?.dispatch?(.playbackFailed(NSError(domain: error, code: 0)))
             case .AdSizeChange:
                 return
             case .AdClickThru:
                 return
+            case .AdNotSupported:
+                self?.dispatch?(.playbackFailed(NSError(domain: "Unsupported VPAID version", code: 1))) //should dispatch that vpaid version is not supported
             }
         }), name: "observer")
         config.userContentController = userController
@@ -129,6 +118,7 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         case AdDurationChanged(CMTime)
         case AdCurrentTimeChanged(CMTime)
         case AdLoaded
+        case AdNotSupported
         case AdStarted
         case AdStopped
         case AdSkipped
@@ -188,6 +178,8 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
             dispatcher(.AdSizeChange)
         case "AdClickThru":
             dispatcher(.AdClickThru)
+        case "AdNotSupported":
+            dispatcher(.AdNotSupported)
         default: return
         }
     }

@@ -1,44 +1,49 @@
 var videos = document.getElementsByTagName('video')
 var videoTag = videos.item(0)
+var element = document.getElementById('video-content')
+var script = document.createElement('script')
 
 var vpaidAd = {}
 
-
-function initAd() {
-    vpaidAd = getVPAIDAd()
-    var version = vpaidAd.handshakeVersion()
-    if (version == '2.0') {
+function initAd(url) {
+    script.type = "application/javascript"
+    script.src = url
+    script.onload = function() {
+        vpaidAd = getVPAIDAd()
+        var version = vpaidAd.handshakeVersion()
+        if ( version != 2.0) {
+            return onAdNotSupported()
+        }
+        vpaidAd.subscribe(onAdLoaded, 'AdLoaded', this)
+        vpaidAd.subscribe(onAdStopped, 'AdStopped', this)
+        vpaidAd.subscribe(onAdSkipped, 'AdSkipped', this)
+        vpaidAd.subscribe(onAdVideoStart, 'AdStarted', this)
+        vpaidAd.subscribe(onAdError, 'AdError', this)
+        videoTag.ondurationchange = onDurationChange
+        videoTag.ontimeupdate = onTimeUpdate
+        
         vpaidAd.initAd(400, 500, null, null,
                        {
-                       AdParameters: '{"videos": [{"mimetype":"video/mp4", "url":"http://cdn.vidible.tv/prod/2018-04/11/5ace36e5be3a230001e24677_v1.mp4"}]}'
+                       AdParameters: '{"videos": [{"mimetype":"video/mp4", "url":"https://cdn.vidible.tv/prod/2017-12/11/5a2eb5b1955a310959beb897_853x480_v2.mp4"}]}'
                        },
                        {
                        slot: document.getElementById('video-content'),
                        videoSlot: document.getElementById('video-player')
-                       });
-    } else {
-        return "VPAID " + version + " version is not supported"
+                       }); 
+        vpaidAd.startAd()
     }
-}
-
-function subscribe() {
-    vpaidAd.subscribe(onAdLoaded, 'AdLoaded', this)
-    vpaidAd.subscribe(onAdStopped, 'AdStopped', this)
-    vpaidAd.subscribe(onAdSkipped, 'AdSkipped', this)
-    vpaidAd.subscribe(onAdVideoStart, 'AdStarted', this)
-    vpaidAd.subscribe(onAdFirstQuartile, 'AdVideoFirstQuartile', this)
-    vpaidAd.subscribe(onAdMidpoint, 'AdVideoMidpoint', this)
-    vpaidAd.subscribe(onAdThirdQuartile, 'AdVideoThirdQuartile', this)
-    vpaidAd.subscribe(onAdVideoComplete, 'AdVideoComplete', this)
-    vpaidAd.subscribe(onAdError, 'AdError', this)
-    
-    videoTag.ondurationchange = onDurationChange
-    videoTag.ontimeupdate = onTimeUpdate
+    element.appendChild(script)
 }
 
 function onAdLoaded() {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
                                                                       "name" : 'AdLoaded',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdNotSupported() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdNotSupported',
                                                                       "value" : null
                                                                       }))
 }
@@ -51,30 +56,6 @@ function onAdStopped() {
 function onAdVideoStart() {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
                                                                       "name" : 'AdStarted',
-                                                                      "value" : null
-                                                                      }))
-}
-function onAdFirstQuartile() {
-    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdVideoFirstQuartile',
-                                                                      "value" : null
-                                                                      }))
-}
-function onAdMidpoint() {
-    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdVideoMidpoint',
-                                                                      "value" : null
-                                                                      }))
-}
-function onAdThirdQuartile() {
-    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdVideoThirdQuartile',
-                                                                      "value" : null
-                                                                      }))
-}
-function onAdVideoComplete() {
-    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdVideoComplete',
                                                                       "value" : null
                                                                       }))
 }

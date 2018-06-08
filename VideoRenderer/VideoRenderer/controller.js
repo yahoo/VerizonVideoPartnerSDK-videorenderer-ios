@@ -5,7 +5,7 @@ var script = document.createElement('script')
 
 var vpaidAd = {}
 
-function initAd(url) {
+function initAd(url, adParameters) {
     script.type = "application/javascript"
     script.src = url
     script.onload = function() {
@@ -24,7 +24,7 @@ function initAd(url) {
         
         vpaidAd.initAd(400, 500, null, null,
                        {
-                       AdParameters: '{"videos": [{"mimetype":"video/mp4", "url":"https://cdn.vidible.tv/prod/2017-12/11/5a2eb5b1955a310959beb897_853x480_v2.mp4"}]}'
+                       AdParameters: adParameters
                        },
                        {
                        slot: document.getElementById('video-content'),

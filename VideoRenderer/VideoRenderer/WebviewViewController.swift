@@ -31,9 +31,8 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             guard let props = props else { webview?.stopLoading(); return }
             if !isLoaded && webview?.isLoading == false {
                 isLoaded = true
-                let urlString = "https://s3.eu-west-2.amazonaws.com/aol-public/mobile-sdk-test-app/vpaid-mediafile-sample.js" //would be props.content
-                //initAd should take vpaid url and adParameters
-                webview?.evaluateJavaScript("initAd('\(urlString)')")
+                guard let adParameters = props.adParameters else { return }
+                webview?.evaluateJavaScript("initAd('\(props.content)', \(adParameters))")
             }
             
             guard isLoaded && isVPAIDInitiated && webview?.isLoading == false else { return }

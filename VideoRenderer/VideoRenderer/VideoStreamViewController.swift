@@ -197,7 +197,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
             
             videoView?.playerLayer?.videoGravity = {
-                switch props.videoResizeOptions {
+                guard let options = props.videoResizeOptions else { return AVLayerVideoGravityResizeAspect }
+                switch options {
                 case .resize:
                     return AVLayerVideoGravityResize
                 case .resizeAspect:

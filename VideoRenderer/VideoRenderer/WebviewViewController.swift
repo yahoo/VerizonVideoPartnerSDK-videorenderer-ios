@@ -25,6 +25,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
     private var isLoaded = false
     private var isPlaying = false
     private var isVPAIDInitiated = false
+    private var isAdStarted = false
     
     public var props: Renderer.Props? {
         didSet {
@@ -32,10 +33,17 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             if !isLoaded && webview?.isLoading == false {
                 isLoaded = true
                 guard let adParameters = props.adParameters else { return }
-                webview?.evaluateJavaScript("initAd('\(props.content)', \(adParameters))")
+                webview?.evaluateJavaScript("initAd('\(props.content)', '\(adParameters)')") { [weak self] (object, error) in
+                    if let error = error {
+                        self?.dispatch?(.playbackFailed(error))
+                        print(error)
+                    }
+                }
             }
             
             guard isLoaded && isVPAIDInitiated && webview?.isLoading == false else { return }
+            
+            if !isAdStarted { webview?.evaluateJavaScript("startAd()") }
             
             webview?.evaluateJavaScript(props.isMuted ? "mute()" : "unmute()")
             
@@ -71,23 +79,16 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             case .AdCurrentTimeChanged(let time):
                 self?.dispatch?(.currentTimeUpdated(time))
             case .AdPaused:
-                self?.dispatch?(.didChangeRate(0.0))
+                self?.dispatch?(.didChangeTimebaseRate(0.0))
             case .AdResumed:
-                self?.dispatch?(.didChangeRate(1.0))
+                self?.dispatch?(.didChangeTimebaseRate(1.0))
             case .AdStarted:
-                return
+                self?.isAdStarted = true
+                self?.dispatch?(.didChangeTimebaseRate(1.0))
             case .AdSkipped:
                 self?.dispatch?(.playbackFinished)
             case .AdStopped:
                 self?.dispatch?(.playbackFinished)
-            case .AdVideoFirstQuartile:
-                return
-            case .AdVideoMidPoint:
-                return
-            case .AdVideoThirdQuartile:
-                return
-            case .AdVideoComplete:
-                return
             case .AdError(let error):
                 self?.dispatch?(.playbackFailed(NSError(domain: error, code: 0)))
             case .AdSizeChange:
@@ -95,7 +96,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             case .AdClickThru:
                 return
             case .AdNotSupported:
-                self?.dispatch?(.playbackFailed(NSError(domain: "Unsupported VPAID version", code: 1))) //should dispatch that vpaid version is not supported
+                self?.dispatch?(.playbackFailed(NSError(domain: "Unsupported VPAID version", code: 1)))
             }
         }), name: "observer")
         config.userContentController = userController
@@ -106,7 +107,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
         defer { view = webview }
         
         let bundle = Bundle(for: type(of: self))
-        guard let url = bundle.url(forResource: "video-tag", withExtension: "html") else { return }
+        guard let url = bundle.url(forResource: "VPAIDAdVideoTag", withExtension: "html") else { return }
         guard let html = try? String(contentsOf: url) else { return }
         webview.loadHTMLString(html, baseURL: bundle.resourceURL)
     }
@@ -124,10 +125,6 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         case AdPaused
         case AdResumed
         case AdSizeChange
-        case AdVideoFirstQuartile
-        case AdVideoMidPoint
-        case AdVideoThirdQuartile
-        case AdVideoComplete
         case AdClickThru
         case AdError(String)
     }
@@ -162,14 +159,6 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
             dispatcher(.AdSkipped)
         case "AdPaused":
             dispatcher(.AdPaused)
-        case "AdVideoFirstQuartile":
-            dispatcher(.AdVideoFirstQuartile)
-        case "AdVideoMidPoint":
-            dispatcher(.AdVideoMidPoint)
-        case "AdVideoThirdQuartile":
-            dispatcher(.AdVideoThirdQuartile)
-        case "AdVideoComplete":
-            dispatcher(.AdVideoComplete)
         case "AdError":
             guard let value = result.value else { return }
             dispatcher(.AdError(value))
@@ -179,6 +168,8 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
             dispatcher(.AdClickThru)
         case "AdNotSupported":
             dispatcher(.AdNotSupported)
+            guard let value = result.value else { return }
+            print(value)
         default: return
         }
     }

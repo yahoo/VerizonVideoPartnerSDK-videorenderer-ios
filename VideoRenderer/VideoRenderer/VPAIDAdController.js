@@ -4,16 +4,14 @@ var element = document.getElementById('video-content')
 var script = document.createElement('script')
 
 var vpaidAd = {}
+var version = 0
 
 function initAd(url, adParameters) {
     script.type = "application/javascript"
     script.src = url
     script.onload = function() {
         vpaidAd = getVPAIDAd()
-        var version = vpaidAd.handshakeVersion()
-        if ( version != 2.0) {
-            return onAdNotSupported()
-        }
+        
         vpaidAd.subscribe(onAdLoaded, 'AdLoaded', this)
         vpaidAd.subscribe(onAdStopped, 'AdStopped', this)
         vpaidAd.subscribe(onAdSkipped, 'AdSkipped', this)
@@ -22,15 +20,14 @@ function initAd(url, adParameters) {
         videoTag.ondurationchange = onDurationChange
         videoTag.ontimeupdate = onTimeUpdate
         
-        vpaidAd.initAd(400, 500, null, null,
+        vpaidAd.initAd(1000, 1000, 'normal', null,
                        {
                        AdParameters: adParameters
                        },
                        {
                        slot: document.getElementById('video-content'),
                        videoSlot: document.getElementById('video-player')
-                       }); 
-        vpaidAd.startAd()
+                       });
     }
     element.appendChild(script)
 }
@@ -41,10 +38,10 @@ function onAdLoaded() {
                                                                       "value" : null
                                                                       }))
 }
-function onAdNotSupported() {
+function onAdNotSupported(version) {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
                                                                       "name" : 'AdNotSupported',
-                                                                      "value" : null
+                                                                      "value" : "" + version
                                                                       }))
 }
 function onAdStopped() {
@@ -96,10 +93,12 @@ function stopAd() {
 
 function pauseAd() {
     vpaidAd.pauseAd()
+    vpaidAd.resizeAd(400,500,'normal')
 }
 
 function resumeAd() {
     vpaidAd.resumeAd()
+    vpaidAd.resizeAd(700,700,'normal')
 }
 
 function finishPlayback() {

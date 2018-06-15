@@ -26,13 +26,18 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
     private var isPlaying = false
     private var isVPAIDInitiated = false
     private var isAdStarted = false
+    private var duration: Double = 0
     
     public var props: Renderer.Props? {
         didSet {
-            guard let props = props else { webview?.stopLoading(); return }
+            guard let props = props else {
+                webview?.stopLoading()
+                duration = 0
+                return
+            }
             if !isLoaded && webview?.isLoading == false {
                 isLoaded = true
-                guard let adParameters = props.adParameters else { return }
+                let adParameters = props.adParameters ?? "{}"
                 webview?.evaluateJavaScript("initAd('\(props.content)', '\(adParameters)')") { [weak self] (object, error) in
                     if let error = error {
                         self?.dispatch?(.playbackFailed(error))
@@ -74,13 +79,17 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
             case .AdLoaded:
                 self?.isVPAIDInitiated = true
                 self?.dispatch?(.playbackReady)
-            case .AdDurationChanged(let time):
+            case .AdDurationChange(let time):
                 self?.dispatch?(.durationReceived(time))
-            case .AdCurrentTimeChanged(let time):
-                self?.dispatch?(.currentTimeUpdated(time))
+            case .AdRemainingTimeChanged(let remainingTime):
+                guard let duration = self?.duration else { return }
+                let currentTime = CMTime(seconds: duration - remainingTime, preferredTimescale: 600)
+                self?.dispatch?(.currentTimeUpdated(currentTime))
             case .AdPaused:
+                guard self?.props?.rate == 1.0 else { return }
                 self?.dispatch?(.didChangeTimebaseRate(0.0))
             case .AdResumed:
+                guard self?.props?.rate == 0.0 else { return }
                 self?.dispatch?(.didChangeTimebaseRate(1.0))
             case .AdStarted:
                 self?.isAdStarted = true
@@ -93,7 +102,7 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
                 self?.dispatch?(.playbackFailed(NSError(domain: error, code: 0)))
             case .AdSizeChange:
                 return
-            case .AdClickThru:
+            case .AdClickThru(let url):
                 return
             case .AdNotSupported:
                 self?.dispatch?(.playbackFailed(NSError(domain: "Unsupported VPAID version", code: 1)))
@@ -115,8 +124,8 @@ public final class WebviewViewController: UIViewController, RendererProtocol {
 
 final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
     enum Event {
-        case AdDurationChanged(CMTime)
-        case AdCurrentTimeChanged(CMTime)
+        case AdDurationChange(CMTime)
+        case AdRemainingTimeChanged(Double)
         case AdLoaded
         case AdNotSupported
         case AdStarted
@@ -125,7 +134,7 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         case AdPaused
         case AdResumed
         case AdSizeChange
-        case AdClickThru
+        case AdClickThru(String?)
         case AdError(String)
     }
     
@@ -143,12 +152,12 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
         guard let result = try? decoder.decode(WebKitMessage.self, from: data) else { return }
         print(result.name)
         switch result.name {
-        case "AdDurationChanged":
+        case "AdDurationChange":
             guard let value = result.value, let time = Double(value) else { return }
-            dispatcher(.AdDurationChanged(CMTime(seconds: time, preferredTimescale: 600)))
-        case "AdCurrentTimeChanged":
+            dispatcher(.AdDurationChange(CMTime(seconds: time, preferredTimescale: 600)))
+        case "AdRemainingTimeChange":
             guard let value = result.value, let time = Double(value) else { return }
-            dispatcher(.AdCurrentTimeChanged(CMTime(seconds: time, preferredTimescale: 600)))
+            dispatcher(.AdRemainingTimeChanged(time))
         case "AdLoaded":
             dispatcher(.AdLoaded)
         case "AdStarted":
@@ -159,17 +168,17 @@ final class VideoTagMessageHandler: NSObject, WKScriptMessageHandler {
             dispatcher(.AdSkipped)
         case "AdPaused":
             dispatcher(.AdPaused)
+        case "AdResumed":
+            dispatcher(.AdResumed)
         case "AdError":
             guard let value = result.value else { return }
             dispatcher(.AdError(value))
         case "AdSizeChange":
             dispatcher(.AdSizeChange)
         case "AdClickThru":
-            dispatcher(.AdClickThru)
+            dispatcher(.AdClickThru(result.value))
         case "AdNotSupported":
             dispatcher(.AdNotSupported)
-            guard let value = result.value else { return }
-            print(value)
         default: return
         }
     }

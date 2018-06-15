@@ -15,10 +15,21 @@ function initAd(url, adParameters) {
         vpaidAd.subscribe(onAdLoaded, 'AdLoaded', this)
         vpaidAd.subscribe(onAdStopped, 'AdStopped', this)
         vpaidAd.subscribe(onAdSkipped, 'AdSkipped', this)
-        vpaidAd.subscribe(onAdVideoStart, 'AdStarted', this)
+        vpaidAd.subscribe(onAdStarted, 'AdStarted', this)
         vpaidAd.subscribe(onAdError, 'AdError', this)
-        videoTag.ondurationchange = onDurationChange
-        videoTag.ontimeupdate = onTimeUpdate
+        
+        vpaidAd.subscribe(onDurationChange, 'AdDurationChange', this)
+        vpaidAd.subscribe(onTimeUpdate, 'AdRemainingTimeChange', this)
+        vpaidAd.subscribe(onAdPaused, 'AdPaused', this)
+        vpaidAd.subscribe(onAdResumed, 'AdPlaying', this)
+        
+        vpaidAd.subscribe(onAdImpression, 'AdImpression', this)
+        vpaidAd.subscribe(onAdVideoStart, 'AdVideoStart', this)
+        vpaidAd.subscribe(onAdVideoFirstQuartile, 'AdVideoFirstQuartile', this)
+        vpaidAd.subscribe(onAdVideoMidpoint, 'AdVideoMidpoint', this)
+        vpaidAd.subscribe(onAdVideoThirdQuartile, 'AdVideoThirdQuartile', this)
+        vpaidAd.subscribe(onAdVideoComplete, 'AdVideoComplete', this)
+        vpaidAd.subscribe(onAdClickThru, 'AdClickThru', this)
         
         vpaidAd.initAd(1000, 1000, 'normal', null,
                        {
@@ -50,7 +61,7 @@ function onAdStopped() {
                                                                       "value" : null
                                                                       }))
 }
-function onAdVideoStart() {
+function onAdStarted() {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
                                                                       "name" : 'AdStarted',
                                                                       "value" : null
@@ -69,17 +80,74 @@ function onAdError() {
                                                                       }))
 }
 
-function onDurationChange () {
+function onDurationChange() {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdDurationChanged',
-                                                                      "value" : "" + videoTag.duration
+                                                                      "name" : 'AdDurationChange',
+                                                                      "value" : "" + vpaidAd.getAdDuration()
                                                                       }))
 }
 
-function onTimeUpdate () {
+function onTimeUpdate() {
     window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
-                                                                      "name" : 'AdCurrentTimeChanged',
-                                                                      "value" : "" + videoTag.currentTime
+                                                                      "name" : 'AdRemainingTimeChange',
+                                                                      "value" : "" + vpaidAd.getAdRemainingTime()
+                                                                      }))
+}
+function onAdPaused() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdPaused',
+                                                                      "value" : null
+                                                                      }))
+}
+
+function onAdResumed() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdResumed',
+                                                                      "value" : null
+                                                                      }))
+}
+
+function onAdImpression() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdImpression',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdVideoStart() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdVideoStart',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdVideoFirstQuartile() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdVideoFirstQuartile',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdVideoMidpoint() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdVideoMidpoint',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdVideoThirdQuartile() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdVideoThirdQuartile',
+                                                                      "value" : null
+                                                                      }))
+}
+function onAdVideoComplete() {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdVideoComplete',
+                                                                      "value" : null
+                                                                      }))
+}
+
+function onAdClickThru(url, id, isPlayerHandles) {
+    window.webkit.messageHandlers.observer.postMessage(JSON.stringify({
+                                                                      "name" : 'AdClickThru',
+                                                                      "value" : "" + url
                                                                       }))
 }
 
@@ -87,29 +155,43 @@ function startAd() {
     vpaidAd.startAd()
 }
 
-function stopAd() {
-    vpaidAd.stopAd()
-}
-
 function pauseAd() {
     vpaidAd.pauseAd()
-    vpaidAd.resizeAd(400,500,'normal')
 }
 
 function resumeAd() {
     vpaidAd.resumeAd()
-    vpaidAd.resizeAd(700,700,'normal')
 }
 
 function finishPlayback() {
+    vpaidAd.unsubscribe('AdLoaded')
+    vpaidAd.unsubscribe('AdStopped')
+    vpaidAd.unsubscribe('AdSkipped')
+    vpaidAd.unsubscribe('AdStarted')
+    vpaidAd.unsubscribe('AdError')
+    
+    vpaidAd.unsubscribe('AdDurationChange')
+    vpaidAd.unsubscribe('AdRemainingTimeChange')
+    vpaidAd.unsubscribe('AdPaused')
+    vpaidAd.unsubscribe('AdPlaying')
+    
+    vpaidAd.unsubscribe('AdImpression')
+    vpaidAd.unsubscribe('AdVideoStart')
+    vpaidAd.unsubscribe('AdVideoFirstQuartile')
+    vpaidAd.unsubscribe('AdVideoMidpoint')
+    vpaidAd.unsubscribe('AdVideoThirdQuartile')
+    vpaidAd.unsubscribe('AdVideoComplete')
+    vpaidAd.unsubscribe('AdClickThru'
     vpaidAd.stopAd()
 }
 
 function mute() {
+    //vpaidAd.setAdVolume(0)
     videoTag.muted = true
 }
 
 function unmute() {
+    //vpaidAd.setAdVolume(100)
     videoTag.muted = false
 }
 

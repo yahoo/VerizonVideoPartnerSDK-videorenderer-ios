@@ -1,6 +1,6 @@
 //  Copyright 2018, Oath Inc.
 //  Licensed under the terms of the MIT License. See LICENSE.md file in project root for terms.
-
+#if os(iOS)
 import Foundation
 import WebKit
 import CoreMedia
@@ -179,3 +179,4 @@ struct WebKitMessage: Codable {
     let name: String
     let value: String?
 }
+#endif

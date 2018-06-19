@@ -4,7 +4,7 @@
 import AVFoundation
 import AVKit
 
-class VideoStreamView: UIView {
+final class VideoStreamView: UIView {
     /// `AVPlayerLayer` class is returned as view backing layer.
     override class var layerClass: AnyClass {
         return AVPlayerLayer.self
@@ -41,7 +41,6 @@ extension Renderer.Descriptor {
         version: "1.0"
     )
 }
-
 
 public final class VideoStreamViewController: UIViewController, RendererProtocol {
     public static let renderer = Renderer(
@@ -198,7 +197,8 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             mediaCharacteristicRenderer.props?.selectedAudibleOption = props.audible
             
             videoView?.playerLayer?.videoGravity = {
-                switch props.videoResizeOptions {
+                guard let options = props.videoResizeOptions else { return AVLayerVideoGravityResizeAspect }
+                switch options {
                 case .resize:
                     return AVLayerVideoGravityResize
                 case .resizeAspect:

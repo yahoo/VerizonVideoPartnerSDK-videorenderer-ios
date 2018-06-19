@@ -29,7 +29,6 @@ extension RendererProtocol where Self: UIViewController {
 public struct Renderer {
     public typealias Provider = () -> RendererProtocol
     
-
     public let descriptor: Descriptor
     public let provider: Provider
     
@@ -50,11 +49,12 @@ extension Renderer {
         public var currentTime: CMTime?
         public var hasDuration: Bool
         public var pictureInPictureActive: Bool
-        public var videoResizeOptions: ResizeOptions
+        public var videoResizeOptions: ResizeOptions?
         public var allowsExternalPlayback: Bool
         public var audible: Option?
         public var legible: Option?
         public var isFinished: Bool
+        public var adParameters: String?
         
         public init(angles: (vertical: Float, horizontal: Float),
                     content: URL,
@@ -67,7 +67,8 @@ extension Renderer {
                     audible: Option?,
                     legible: Option?,
                     isFinished: Bool,
-                    videoResizeOptions: ResizeOptions) {
+                    videoResizeOptions: ResizeOptions?,
+                    adParameters: String?) {
             self.angles = angles
             self.content = content
             self.rate = rate
@@ -80,6 +81,7 @@ extension Renderer {
             self.legible = legible
             self.isFinished = isFinished
             self.videoResizeOptions = videoResizeOptions
+            self.adParameters = adParameters
         }
     }
 }
@@ -163,6 +165,7 @@ extension Renderer {
             // it is the only one that should be registered for tvOS.
             #if os(iOS)
             register(renderer: SphereVideoStreamViewController.renderer)
+            register(renderer: WebviewViewController.renderer)
             #endif
         }
         

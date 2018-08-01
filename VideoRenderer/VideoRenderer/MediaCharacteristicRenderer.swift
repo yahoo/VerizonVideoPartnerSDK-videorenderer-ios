@@ -74,14 +74,14 @@ final class MediaCharacteristicRenderer {
                 var options: [AVMediaSelectionGroup: AVMediaSelectionOption] = [:]
                 if oldProps?.selectedAudibleOption != props.selectedAudibleOption,
                     let selectedOption = props.selectedAudibleOption {
-                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible) {
+                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristic.audible) {
                         options[group] = mediaOptionCache.audibleOptions[selectedOption]
                     }
                 }
 
                 if oldProps?.selectedLegibleOption != props.selectedLegibleOption,
                     let selectedOption = props.selectedLegibleOption {
-                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible) {
+                    if let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristic.legible) {
                         options[group] = mediaOptionCache.legibleOptions[selectedOption]
                     }
                 }
@@ -115,7 +115,7 @@ final class MediaCharacteristicRenderer {
                                      selectedOption: selectedAudibleOptionPair?.0)
                     }
                     return item.asset
-                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicAudible)
+                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristic.audible)
                         .flatMap(map) ?? .empty
                 }
                 self.props?.didDiscoverAudibleOptions(audibleOptions())
@@ -133,7 +133,7 @@ final class MediaCharacteristicRenderer {
                                      selectedOption: pairs.first?.0)
                     }
                     return item.asset
-                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristicLegible)
+                        .mediaSelectionGroup(forMediaCharacteristic: AVMediaCharacteristic.legible)
                         .flatMap(map) ?? .empty
                 }
                 self.props?.didDiscoverLegibleOptions(legibleOptions())

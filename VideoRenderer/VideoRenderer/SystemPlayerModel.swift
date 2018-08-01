@@ -110,7 +110,7 @@ extension SystemPlayer {
             print(event: "\(self.player): \(formatter.string(from: Date())) \(event)")
         }
         
-        func handleNotification(notification: NSNotification) {
+        @objc func handleNotification(notification: NSNotification) {
             self.print(event: "\(notification.name): \(String(describing: notification.userInfo))")
         }
         //swiftlint:disable cyclomatic_complexity

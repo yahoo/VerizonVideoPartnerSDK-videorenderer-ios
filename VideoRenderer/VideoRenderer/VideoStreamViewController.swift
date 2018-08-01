@@ -22,17 +22,6 @@ class VideoStreamView: UIView {
     deinit {
         player?.currentItem?.asset.cancelLoading()
     }
-    
-    private var naturalSize: CGSize? {
-        guard
-            let item = player?.currentItem,
-            item.status == .readyToPlay,
-            let track = item.asset.tracks(withMediaType: AVMediaTypeVideo).first else {
-                return nil
-        }
-        
-        return track.naturalSize
-    }
 }
 
 extension Renderer.Descriptor {
@@ -98,7 +87,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 seekerController = nil
                 mediaCharacteristicRenderer.props = nil
                 
-                videoView?.playerLayer?.videoGravity = AVLayerVideoGravityResizeAspect
+                videoView?.playerLayer?.videoGravity = AVLayerVideoGravity.resizeAspect
                 return
             }
             
@@ -200,11 +189,11 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
             videoView?.playerLayer?.videoGravity = {
                 switch props.videoResizeOptions {
                 case .resize:
-                    return AVLayerVideoGravityResize
+                    return AVLayerVideoGravity.resize
                 case .resizeAspect:
-                    return AVLayerVideoGravityResizeAspect
+                    return AVLayerVideoGravity.resizeAspect
                 case .resizeAspectFill:
-                    return AVLayerVideoGravityResizeAspectFill
+                    return AVLayerVideoGravity.resizeAspectFill
                 }
             }()
             

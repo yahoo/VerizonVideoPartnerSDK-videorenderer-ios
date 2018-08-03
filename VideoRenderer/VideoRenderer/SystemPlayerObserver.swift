@@ -61,7 +61,7 @@ public final class SystemPlayerObserver: NSObject {
                            context: nil)
     }
     
-    func didPlayToEnd(notification: NSNotification) {
+    @objc func didPlayToEnd(notification: NSNotification) {
         guard let item = notification.object as? AVPlayerItem else {
             return
         }

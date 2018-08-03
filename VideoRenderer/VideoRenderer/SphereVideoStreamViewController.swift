@@ -5,7 +5,10 @@ import GLKit
 import AVFoundation
 
 private let sharedContext: EAGLContext = {
-    return EAGLContext(api: .openGLES3) ?? EAGLContext(api: .openGLES2)
+    guard let context = EAGLContext(api: .openGLES3) ?? EAGLContext(api: .openGLES2) else {
+        fatalError("Unable to initialise both OpenGL 3 and 2!")
+    }
+    return context
 }()
 
 extension Renderer.Descriptor {

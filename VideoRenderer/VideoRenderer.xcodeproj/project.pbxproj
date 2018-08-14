@@ -14,7 +14,6 @@
 		DEA993B21E83FEF300EB3B8A /* SystemPlayerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */; };
 		DEA993B71E83FF0900EB3B8A /* VideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */; };
 		DEA993B81E83FF0900EB3B8A /* SeekerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993B51E83FF0900EB3B8A /* SeekerController.swift */; };
-		DEA993B91E83FF0900EB3B8A /* ContentRendererViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993B61E83FF0900EB3B8A /* ContentRendererViewController.swift */; };
 		DEA993BD1E83FF1D00EB3B8A /* SphereView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BA1E83FF1D00EB3B8A /* SphereView.swift */; };
 		DEA993BE1E83FF1D00EB3B8A /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BB1E83FF1D00EB3B8A /* Camera.swift */; };
 		DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */; };
@@ -46,7 +45,6 @@
 		DEA993AD1E83FEF300EB3B8A /* SystemPlayerObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemPlayerObserver.swift; sourceTree = "<group>"; };
 		DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoStreamViewController.swift; sourceTree = "<group>"; };
 		DEA993B51E83FF0900EB3B8A /* SeekerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeekerController.swift; sourceTree = "<group>"; };
-		DEA993B61E83FF0900EB3B8A /* ContentRendererViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentRendererViewController.swift; sourceTree = "<group>"; };
 		DEA993BA1E83FF1D00EB3B8A /* SphereView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SphereView.swift; sourceTree = "<group>"; };
 		DEA993BB1E83FF1D00EB3B8A /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SphereVideoStreamViewController.swift; sourceTree = "<group>"; };
@@ -104,7 +102,6 @@
 				DEA993B41E83FF0900EB3B8A /* VideoStreamViewController.swift */,
 				DED8F3391FBB34E1005BA836 /* MediaCharacteristicRenderer.swift */,
 				DEA993B51E83FF0900EB3B8A /* SeekerController.swift */,
-				DEA993B61E83FF0900EB3B8A /* ContentRendererViewController.swift */,
 				DEA993BA1E83FF1D00EB3B8A /* SphereView.swift */,
 				DEA993BB1E83FF1D00EB3B8A /* Camera.swift */,
 				DEA993BC1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift */,
@@ -247,7 +244,6 @@
 				DEA993BD1E83FF1D00EB3B8A /* SphereView.swift in Sources */,
 				DED8F33A1FBB34E1005BA836 /* MediaCharacteristicRenderer.swift in Sources */,
 				DEA993B81E83FF0900EB3B8A /* SeekerController.swift in Sources */,
-				DEA993B91E83FF0900EB3B8A /* ContentRendererViewController.swift in Sources */,
 				DEA993BF1E83FF1D00EB3B8A /* SphereVideoStreamViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

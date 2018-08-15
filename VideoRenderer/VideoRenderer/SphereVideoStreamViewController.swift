@@ -18,7 +18,7 @@ extension Renderer.Descriptor {
     )
 }
 
-public class SphereVideoStreamViewController: GLKViewController, RendererProtocol {
+public class SphereVideoStreamViewController: GLKViewController, RendererProtocol, GLKViewControllerDelegate {
     public static let renderer = Renderer(
         descriptor: .sphere,
         provider: { SphereVideoStreamViewController() }
@@ -34,8 +34,13 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
         return view as? SphereView
     }
     
-    override public func loadView() {
+    public override func loadView() {
         view = SphereView()
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
         
         EAGLContext.setCurrent(sharedContext)
         sphereview?.context = sharedContext
@@ -48,7 +53,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
         }
     }
     
-    func update() { // This method is called by GL subsystem when paused is false
+    public func glkViewControllerUpdate(_ controller: GLKViewController) {
         guard player?.currentItem?.status == .readyToPlay else { return }
         
         guard let currentTime = player?.currentTime() else { return }

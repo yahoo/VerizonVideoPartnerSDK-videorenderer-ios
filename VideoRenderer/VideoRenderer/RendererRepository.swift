@@ -124,15 +124,7 @@ extension Renderer {
         /// Example: 1.0.0 basically semver 2.0
         public let version: String
         
-        public enum Error: Swift.Error {
-            case emptyID, emptyVersion
-        }
-        
-        /// Throw error in case of empty id or version values
-        public init(id: String, version: String) throws {
-            guard !id.isEmpty else { throw Error.emptyID }
-            guard !version.isEmpty else { throw Error.emptyVersion }
-            
+        public init(id: String, version: String) {
             self.id = id
             self.version = version
         }

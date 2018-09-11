@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'VideoRenderer'
-  s.version          = 'new_version'
+  s.version          = '1.24'
   s.summary          = 'Default video renderers for OathVideoPartnerSDK.'
   s.license          = { type: 'MIT', file: 'LICENSE' }
   s.swift_version    = '4.1'

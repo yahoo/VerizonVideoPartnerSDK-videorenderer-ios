@@ -12,7 +12,7 @@ private let sharedContext: EAGLContext = {
 }()
 
 extension Renderer.Descriptor {
-    public static let sphere = try! Renderer.Descriptor(
+    public static let sphere = Renderer.Descriptor(
         id: "com.onemobilesdk.videorenderer.360",
         version: "1.0"
     )
@@ -135,7 +135,7 @@ public class SphereVideoStreamViewController: GLKViewController, RendererProtoco
                 
                 player = currentPlayer
                 
-                seekerController = SeekerController(with: currentPlayer) { [weak self] event in
+                seekerController = SeekerController(with: currentPlayer, context: props.context) { [weak self] event in
                     guard let dispatch = self?.dispatch else { return }
                     switch event {
                     case .startSeek: dispatch(.didStartSeek)

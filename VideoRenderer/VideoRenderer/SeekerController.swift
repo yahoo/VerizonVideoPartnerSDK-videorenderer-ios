@@ -15,9 +15,14 @@ public final class SeekerController {
     
     public let dispatcher: Dispatch
     public let player: AVPlayer
+    /// Context allows to separate controller's during debugging
+    public let context: String
     
-    public init(with player: AVPlayer, dispatcher: @escaping Dispatch) {
+    public init(with player: AVPlayer,
+                context: String,
+                dispatcher: @escaping Dispatch) {
         self.player = player
+        self.context = context
         self.dispatcher = dispatcher
     }
     

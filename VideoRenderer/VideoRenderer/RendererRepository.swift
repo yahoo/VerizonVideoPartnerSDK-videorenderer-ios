@@ -43,6 +43,8 @@ extension Renderer {
     public struct Props {
         public typealias Option = AvailableMediaOptions.Option
         
+        /// Context allows to separate renderers during debugging
+        public let context: String
         public var angles: (vertical: Float, horizontal: Float)
         public var content: URL
         public var rate: Float
@@ -56,7 +58,8 @@ extension Renderer {
         public var legible: Option?
         public var isFinished: Bool
         
-        public init(angles: (vertical: Float, horizontal: Float),
+        public init(context: String,
+                    angles: (vertical: Float, horizontal: Float),
                     content: URL,
                     rate: Float,
                     isMuted: Bool,
@@ -68,6 +71,7 @@ extension Renderer {
                     legible: Option?,
                     isFinished: Bool,
                     videoResizeOptions: ResizeOptions) {
+            self.context = context
             self.angles = angles
             self.content = content
             self.rate = rate

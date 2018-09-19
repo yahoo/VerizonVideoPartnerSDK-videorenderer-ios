@@ -25,7 +25,7 @@ class VideoStreamView: UIView {
 }
 
 extension Renderer.Descriptor {
-    public static let flat = try! Renderer.Descriptor(
+    public static let flat = Renderer.Descriptor(
         id: "com.onemobilesdk.videorenderer.flat",
         version: "1.0"
     )
@@ -154,7 +154,7 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                 
                 player = currentPlayer
                 
-                seekerController = SeekerController(with: currentPlayer) { [weak self] event in
+                seekerController = SeekerController(with: currentPlayer, context: props.context) { [weak self] event in
                     guard let dispatch = self?.dispatch else { return }
                     switch event {
                     case .startSeek: dispatch(.didStartSeek)

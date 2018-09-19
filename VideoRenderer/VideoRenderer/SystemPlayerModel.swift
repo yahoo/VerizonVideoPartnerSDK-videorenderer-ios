@@ -125,12 +125,12 @@ extension SystemPlayer {
             switch keyPath {
             case "player.status" where new is Int:
                 guard let value = new as? Int else { fatalError() }
-                guard let status = AVPlayerStatus(rawValue: value) else { fatalError() }
+                guard let status = AVPlayer.Status(rawValue: value) else { fatalError() }
                 new = status
                 
             case "player.currentItem.status" where new is Int:
                 guard let value = new as? Int else { fatalError() }
-                guard let status = AVPlayerItemStatus(rawValue: value) else { fatalError() }
+                guard let status = AVPlayerItem.Status(rawValue: value) else { fatalError() }
                 new = status
                 
             case "currentTime" where new is NSValue,
@@ -149,7 +149,7 @@ extension SystemPlayer {
     }
 }
 
-extension AVPlayerStatus: CustomDebugStringConvertible {
+extension AVPlayer.Status: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case .unknown: return ".unknown"
@@ -159,7 +159,7 @@ extension AVPlayerStatus: CustomDebugStringConvertible {
     }
 }
 
-extension AVPlayerItemStatus: CustomDebugStringConvertible {
+extension AVPlayerItem.Status: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
         case .unknown: return ".unknown"

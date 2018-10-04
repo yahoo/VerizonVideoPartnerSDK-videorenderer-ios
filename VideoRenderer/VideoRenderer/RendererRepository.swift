@@ -97,6 +97,8 @@ extension Renderer {
         case playbackFinished
         case playbackReady
         case playbackFailed(Error)
+        case playbackLikelyToKeepUp(Bool)
+        case playbackBufferEmpty(Bool)
         
         case durationReceived(CMTime)
         case currentTimeUpdated(CMTime)

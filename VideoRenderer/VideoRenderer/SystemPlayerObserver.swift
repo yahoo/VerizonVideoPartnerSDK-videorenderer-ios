@@ -13,6 +13,8 @@ public final class SystemPlayerObserver: NSObject {
         case didChangeUrl(from: URL?, to: URL?)
         case didChangeItemStatusToUnknown()
         case didChangeItemStatusToReadyToPlay()
+        case didChangeItemPlaybackLikelyToKeepUp(to: Bool)
+        case didChangeItemPlaybackBufferEmpty(to: Bool)
         case didChangeItemStatusToFailed(error: Error)
         case didFinishPlayback(withUrl: URL)
         case didChangeLoadedTimeRanges(to: [CMTimeRange])
@@ -122,6 +124,10 @@ public final class SystemPlayerObserver: NSObject {
                                         forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
                 oldItem?.removeObserver(self,
                                         forKeyPath: #keyPath(AVPlayerItem.timebase))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
+                oldItem?.removeObserver(self,
+                                        forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
                 if let old = oldItem {
                     center.removeObserver(self,
                                           name: .AVPlayerItemDidPlayToEndTime,
@@ -152,7 +158,14 @@ public final class SystemPlayerObserver: NSObject {
                                      forKeyPath: #keyPath(AVPlayerItem.timebase),
                                      options: [.initial, .new],
                                      context: nil)
-                
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp),
+                                     options: [.initial, .new],
+                                     context: nil)
+                newItem?.addObserver(self,
+                                     forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty),
+                                     options: [.initial, .new],
+                                     context: nil)
                 if let new = newItem {
                     center.addObserver(
                         self,
@@ -196,6 +209,14 @@ public final class SystemPlayerObserver: NSObject {
         case #keyPath(AVPlayer.error):
             guard let error: Error = newValue() else { return }
             emit(.didReceivePlayerError(error))
+            
+        case #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp):
+            guard let newItem = newValue() as Bool? else { return }
+            emit(.didChangeItemPlaybackLikelyToKeepUp(to: newItem))
+            
+        case #keyPath(AVPlayerItem.isPlaybackBufferEmpty):
+            guard let newItem = newValue() as Bool? else { return }
+            emit(.didChangeItemPlaybackBufferEmpty(to: newItem))
             
         case #keyPath(AVPlayerItem.status):
             guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }
@@ -272,6 +293,10 @@ public final class SystemPlayerObserver: NSObject {
                                            forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
         player.currentItem?.removeObserver(self,
                                            forKeyPath: #keyPath(AVPlayerItem.timebase))
+        player.currentItem?.removeObserver(self,
+                                           forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
+        player.currentItem?.removeObserver(self,
+                                           forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
         player.removeObserver(self,
                               forKeyPath: #keyPath(AVPlayer.currentItem))
         player.removeObserver(self,

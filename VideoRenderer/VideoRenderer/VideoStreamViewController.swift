@@ -127,6 +127,10 @@ public final class VideoStreamViewController: UIViewController, RendererProtocol
                         self?.dispatch?(.playbackReady)
                     case .didChangeItemStatusToFailed(let error):
                         self?.dispatch?(.playbackFailed(error))
+                    case .didChangeItemPlaybackLikelyToKeepUp(let new):
+                        self?.dispatch?(.playbackLikelyToKeepUp(new))
+                    case .didChangeItemPlaybackBufferEmpty(let new):
+                        self?.dispatch?(.playbackBufferEmpty(new))
                     case .didChangeExternalPlaybackStatus(let status):
                         self?.dispatch?(.externalPlaybackPossible(status))
                     case .didChangeExternalPlaybackAllowance(let status):

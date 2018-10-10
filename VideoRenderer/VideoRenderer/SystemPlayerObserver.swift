@@ -219,7 +219,7 @@ public final class SystemPlayerObserver: NSObject {
             emit(.didChangeItemPlaybackBufferEmpty(to: newItem))
             
         case #keyPath(AVPlayerItem.status):
-            guard let newStatus = newValue().flatMap(AVPlayerItemStatus.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }
+            guard let newStatus = newValue().flatMap(AVPlayerItem.Status.init) else { fatalError("Unexpected nil in AVPlayerItem.status value!") }
             switch newStatus {
             case .unknown: emit(.didChangeItemStatusToUnknown())
             case .readyToPlay: emit(.didChangeItemStatusToReadyToPlay())
@@ -270,7 +270,7 @@ public final class SystemPlayerObserver: NSObject {
                                                 self?.emit(.didChangeItemDuration(to: new.duration))
                 })
             case .loaded:
-                if new.duration != kCMTimeIndefinite {
+                if new.duration != CMTime.indefinite {
                     emit(.didChangeItemDuration(to: new.duration))
                 }
             }

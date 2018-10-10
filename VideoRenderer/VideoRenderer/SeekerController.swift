@@ -38,8 +38,8 @@ public final class SeekerController {
         activeSeekingTime = time
         dispatcher(.startSeek)
         player.seek(to: time,
-                    toleranceBefore: CMTimeMake(0, 1),
-                    toleranceAfter: CMTimeMake(1, 2)) { [weak self] _ in
+                    toleranceBefore: CMTimeMake(value: 0, timescale: 1),
+                    toleranceAfter: CMTimeMake(value: 1, timescale: 2)) { [weak self] _ in
                         guard let `self` = self else { return }
                         self.activeSeekingTime = nil
                         self.dispatcher(.stopSeek)

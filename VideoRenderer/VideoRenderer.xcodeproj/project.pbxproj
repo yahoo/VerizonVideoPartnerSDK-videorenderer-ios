@@ -183,7 +183,7 @@
 					DEA993831E83FE0600EB3B8A = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 7V23547MMU;
-						LastSwiftMigration = 0940;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 					DEA9938C1E83FE0600EB3B8A = {
@@ -399,7 +399,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.aol.mobile.onesdk.VideoRenderer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -419,7 +419,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.aol.mobile.onesdk.VideoRenderer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};

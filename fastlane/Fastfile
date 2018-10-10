@@ -5,6 +5,10 @@ actions_path 'actions/common/sourcery/'
 actions_path 'actions/common/json/'
 actions_path 'actions/common/utils/'
 
+before_all do |lane, options|
+  xcversion(version: '~> 10')
+end
+
 desc 'Generate VideoRenderer release description'
 lane :release_videorenderer_description do |options|
   description = 'Template description'
@@ -14,6 +18,16 @@ lane :release_videorenderer_description do |options|
   end
   description
 end
+
+lane :test do
+  scan(
+    fail_build: true,
+    scheme: 'VideoRenderer',
+    device: 'iPhone 8 Plus',
+    project: 'VideoRenderer/VideoRenderer.xcodeproj'
+    )
+end
+
 
 desc "Builds sdk using 'carthage'."
 lane :build do |options|

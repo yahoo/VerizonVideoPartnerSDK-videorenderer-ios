@@ -22,7 +22,9 @@ end
 lane :test do
   scan(
     fail_build: true,
-    scheme: 'VideoRenderer'
+    scheme: 'VideoRenderer',
+    device: 'iPhone 8 Plus',
+    project: 'VideoRenderer/VideoRenderer.xcodeproj'
     )
 end
 

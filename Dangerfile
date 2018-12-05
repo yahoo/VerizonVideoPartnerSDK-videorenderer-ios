@@ -8,6 +8,9 @@ warn 'Big PR - break it to smaller PRs.' if git.lines_of_code > 500
 
 warn "#{git.commits.count} commits too many - please, squash them" if git.commits.count > 5
 
+warn 'Please, set correct Jira link in the PR comment.' if 
+github.pr_body.include? "[JIRA Ticket](xxx)"
+
 build_type = ENV['TRAVIS_EVENT_TYPE']
 if build_type.eql? "pull_request"
 	branch_name = ENV['TRAVIS_PULL_REQUEST_BRANCH']

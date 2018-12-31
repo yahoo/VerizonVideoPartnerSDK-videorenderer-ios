@@ -114,3 +114,10 @@ lane :release_videorenderer do |options|
 
   reset_git_repo(force: true)
 end
+
+lane :lint_current_podspec do
+  lint_podspec(
+    sources_repo: 'https://github.com/VerizonAdPlatforms/OneMobileSDK-releases-iOS',
+    swift_version: '4.2',
+    podspec_path: 'VideoRenderer.podspec')
+end

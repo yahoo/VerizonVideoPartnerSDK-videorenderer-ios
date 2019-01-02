@@ -1,14 +1,12 @@
 Pod::Spec.new do |s|
   s.name             = 'VideoRenderer'
-  s.version          = '1.24'
+  s.version          = '1.25'
   s.summary          = 'Default video renderers for OathVideoPartnerSDK.'
   s.license          = { type: 'MIT', file: 'LICENSE' }
-  s.swift_version    = '4.1'
+  s.swift_version    = '4.2'
   s.homepage         = 'https://github.com/OathAdPlatforms/OneMobileSDK-videorenderer-ios.git'
   s.author           = {
     'Andrey Moskvin' => 'andrey.moskvin@oath.com',
-    'Alexey Demedetskiy' => 'alexey.demedetskiy@oath.com',
-    'Bogdan Bilonog' => 'bogdan.bilonog@oath.com',
     'Roman Tysiachnik' => 'roman.tysiachnik@oath.com',
     'Vladyslav Anokhin' => 'vladyslav.anokhin@oath.com'
   }

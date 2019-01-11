@@ -59,7 +59,7 @@ lane :release_videorenderer do |options|
   token = options[:token]
   UI.user_error!('Expecting `token`!') if token.nil?
 
-  repo_name = 'aol-public/OneMobileSDK-videorenderer-ios'
+  repo_name = 'aol-public/VerizonVideoPartnerSDK-videorenderer-ios'
 
   is_release_exist = github_releases_api(action: 'is_release_exist', repo_name: repo_name, version: version, token: token)
   UI.user_error!("Release on tag #{version} already exists!") unless is_release_exist
@@ -106,8 +106,8 @@ lane :release_videorenderer do |options|
     deploy_podspec(
       podspec_path: podspec_name,
       spec_repo_name: 'onemobile-sdk-podspecs',
-      spec_repo_url: 'git@github.com:vidible/OneMobileSDK-releases.git',
-      sources_repo: 'https://github.com/vidible/OneMobileSDK-releases.git',
+      spec_repo_url: 'git@github.com:VerizonAdPlatforms/VerizonVideoPartnerSDK-releases-iOS.git',
+      sources_repo: 'https://github.com/VerizonAdPlatforms/VerizonVideoPartnerSDK-releases-iOS.git',
       swift_version: swift_version
     )
   end
@@ -117,6 +117,6 @@ end
 
 lane :lint_current_podspec do
   lint_podspec(
-    sources_repo: 'https://github.com/VerizonAdPlatforms/OneMobileSDK-releases-iOS',
+    sources_repo: 'https://github.com/VerizonAdPlatforms/VerizonVideoPartnerSDK-releases-iOS',
     podspec_path: 'VideoRenderer.podspec')
 end

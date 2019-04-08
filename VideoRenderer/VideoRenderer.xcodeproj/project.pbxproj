@@ -195,11 +195,11 @@
 			};
 			buildConfigurationList = DEA9937E1E83FE0600EB3B8A /* Build configuration list for PBXProject "VideoRenderer" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = DEA9937A1E83FE0600EB3B8A;
 			productRefGroup = DEA993851E83FE0600EB3B8A /* Products */;

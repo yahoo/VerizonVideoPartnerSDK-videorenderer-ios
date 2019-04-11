@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'VideoRenderer'
-  s.version          = '1.26'
+  s.version          = '1.28'
   s.summary          = 'Default video renderers for VerizonVideoPartnerSDK.'
   s.license          = { type: 'MIT', file: 'LICENSE' }
   s.swift_version    = '4.2'

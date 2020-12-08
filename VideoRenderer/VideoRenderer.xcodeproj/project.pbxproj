@@ -262,7 +262,6 @@
 					};
 					DEA9938C1E83FE0600EB3B8A = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 7V23547MMU;
 						LastSwiftMigration = 0940;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 1BB2BA48257858F200F3F1B1;
@@ -575,7 +574,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 7V23547MMU;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -595,7 +594,7 @@
 			baseConfigurationReference = DE5B53B51E897C840036C17B /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 7V23547MMU;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = VideoRendererTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aol.mobile.onesdk.VideoRendererTests;
@@ -610,7 +609,7 @@
 			baseConfigurationReference = DE5B53B51E897C840036C17B /* Tests.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				DEVELOPMENT_TEAM = 7V23547MMU;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = VideoRendererTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aol.mobile.onesdk.VideoRendererTests;
